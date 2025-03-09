@@ -31,18 +31,19 @@ export function Header({ className }: HeaderProps) {
         </div>
         
         <nav className="flex flex-col md:flex-row items-start md:items-center mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-6">
-          <div className="hidden md:flex items-center space-x-6">
-            {commonConversions.map((conversion, index) => (
-              <Link 
-                key={index}
-                to={`/${formatToSlug(conversion.source, conversion.target)}`}
-                className="text-sm font-medium hover:text-primary transition-colors"
-                aria-label={`Convert ${conversion.source.toUpperCase()} to ${conversion.target.toUpperCase()}`}
-              >
-                {conversion.source.toUpperCase()} to {conversion.target.toUpperCase()}
-              </Link>
-            ))}
-            <ThemeToggle />
+          <div className="flex items-center space-x-6">
+            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+              Tools
+            </Link>
+            <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
+              About Us
+            </Link>
+            <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+              Contact Us
+            </Link>
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
           </div>
         </nav>
       </div>

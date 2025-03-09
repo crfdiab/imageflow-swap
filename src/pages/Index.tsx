@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -6,17 +5,29 @@ import { ConversionArea } from "@/components/ConversionArea";
 import { FAQSection } from "@/components/FAQSection";
 import { RelatedConverters } from "@/components/RelatedConverters";
 import { Footer } from "@/components/Footer";
-import { slugToFormat } from "@/utils/formatUtils";
+import { slugToFormat, IMAGE_FORMATS, formatToSlug, ImageFormat } from "@/utils/formatUtils";
+import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   
-  // If no format specified in URL, redirect to default PNG to JPEG conversion
+  // Group formats for the homepage
+  const formatGroups = [
+    { format: 'png' as ImageFormat, title: 'PNG' },
+    { format: 'jpeg' as ImageFormat, title: 'JPEG' },
+    { format: 'webp' as ImageFormat, title: 'WebP' },
+    { format: 'avif' as ImageFormat, title: 'AVIF' },
+    { format: 'gif' as ImageFormat, title: 'GIF' },
+    { format: 'svg' as ImageFormat, title: 'SVG' },
+  ];
+  
+  // If no format specified in URL, show homepage
   useEffect(() => {
-    if (!slug) {
-      navigate("/png-jpeg", { replace: true });
-    } else if (slug && !slugToFormat(slug)) {
+    if (slug && !slugToFormat(slug)) {
       // If invalid slug, redirect to default
       navigate("/png-jpeg", { replace: true });
     }
@@ -77,18 +88,117 @@ const Index = () => {
         
         structuredData.textContent = JSON.stringify(schemaData);
       }
+    } else {
+      // Homepage metadata
+      document.title = "Convertify - Free Online Image Format Conversion Tools";
+      
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', 
+        "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy."
+      );
+      
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', "https://convertify.click");
     }
   }, [slug]);
   
+  // Helper function to generate target formats for a source format
+  const getTargetFormats = (sourceFormat: ImageFormat): ImageFormat[] => {
+    return IMAGE_FORMATS.filter(format => 
+      format !== sourceFormat && 
+      // Filter out jpg when jpeg is present
+      !(format === 'jpg' && sourceFormat === 'jpeg') && 
+      !(sourceFormat === 'jpg' && format === 'jpeg')
+    ) as ImageFormat[];
+  };
+  
+  // If we have a slug, show the converter page
+  if (slug) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1">
+          <ConversionArea />
+          <div id="faq">
+            <FAQSection />
+          </div>
+          <RelatedConverters />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+  
+  // Otherwise, show the homepage with all tool categories
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1">
-        <ConversionArea />
-        <div id="faq">
-          <FAQSection />
-        </div>
-        <RelatedConverters />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <section className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Free Online Image Format Conversion
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Convert between various image formats with our fast, free, and secure browser-based tools.
+            No uploads required - all processing happens right in your browser.
+          </p>
+        </section>
+        
+        {/* Tool categories by format */}
+        {formatGroups.map((group) => (
+          <section className="mb-12" key={group.format}>
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">
+              Free {group.title} Image Conversion Tools
+            </h2>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {getTargetFormats(group.format).map((targetFormat) => {
+                const conversionSlug = formatToSlug(group.format, targetFormat);
+                return (
+                  <Link
+                    key={targetFormat}
+                    to={`/${conversionSlug}`}
+                    className="no-underline text-foreground"
+                  >
+                    <Card className={cn(
+                      "p-4 flex flex-col items-center justify-center text-center h-full transition-all duration-300",
+                      "hover:shadow-md hover:-translate-y-1"
+                    )}>
+                      <h3 className="font-medium flex items-center gap-2 mb-2">
+                        <span>{group.format.toUpperCase()}</span>
+                        <ArrowRight size={16} className="text-primary" />
+                        <span>{targetFormat.toUpperCase()}</span>
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Convert {group.format.toUpperCase()} to {targetFormat.toUpperCase()} format
+                      </p>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+        
+        {/* FAQ Section for homepage */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 border-b pb-2">
+            Frequently Asked Questions
+          </h2>
+          <div className="max-w-3xl mx-auto">
+            <FAQSection />
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

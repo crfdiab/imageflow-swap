@@ -49,9 +49,21 @@ export function Footer() {
               <Link to="/" className="text-sm block hover:text-primary transition-colors">
                 Home
               </Link>
-              <a href="#faq" className="text-sm block hover:text-primary transition-colors">
-                FAQ
-              </a>
+              <Link to="/about" className="text-sm block hover:text-primary transition-colors">
+                About Us
+              </Link>
+              <Link to="/contact" className="text-sm block hover:text-primary transition-colors">
+                Contact Us
+              </Link>
+              <Link to="/privacy" className="text-sm block hover:text-primary transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/data-protection" className="text-sm block hover:text-primary transition-colors">
+                Data Protection
+              </Link>
+              <Link to="/terms" className="text-sm block hover:text-primary transition-colors">
+                Terms of Service
+              </Link>
               <p className="text-sm text-muted-foreground pt-4">
                 © {year} Convertify. All rights reserved.
               </p>
