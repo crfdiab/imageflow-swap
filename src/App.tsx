@@ -3,8 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from 'react-helmet';
-import { MetaTags } from "./components/MetaTags";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
@@ -34,31 +32,41 @@ const queryClient = new QueryClient({
   },
 });
 
+// Add the verification meta tag directly to the document head
+const addVerificationTag = () => {
+  const meta = document.createElement('meta');
+  meta.name = 'google-site-verification';
+  meta.content = GSC_VERIFICATION;
+  document.head.appendChild(meta);
+};
+
+// Call this function when the app loads
+if (typeof document !== 'undefined') {
+  addVerificationTag();
+}
+
 const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <MetaTags searchConsoleVerification={GSC_VERIFICATION} />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <GoogleTagManager gtmId={GTM_ID} />
-          <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
-          <Routes>
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/data-protection" element={<DataProtection />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/:slug" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BackToTop />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <GoogleTagManager gtmId={GTM_ID} />
+        <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/data-protection" element={<DataProtection />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/:slug" element={<Index />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <BackToTop />
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
