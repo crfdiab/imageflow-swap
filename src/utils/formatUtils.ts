@@ -23,24 +23,21 @@ export const isSupportedFormat = (extension: string): boolean => {
 
 // Generate all permutations of format conversions
 export const generateConversionPairs = (): { source: ImageFormat, target: ImageFormat }[] => {
-  const uniqueFormats = Array.from(new Set(IMAGE_FORMATS))
-    .filter(format => format !== 'jpeg') // Filter out jpeg as we treat jpg and jpeg as the same
-    .concat(['jpeg']); // Add jpeg back to ensure it's included
+  // Create a set of unique formats to handle jpg/jpeg equivalence
+  const uniqueFormats = Array.from(new Set(
+    IMAGE_FORMATS.map(format => normalizeFormat(format))
+  ));
   
   const pairs: { source: ImageFormat, target: ImageFormat }[] = [];
   
   uniqueFormats.forEach(source => {
     uniqueFormats.forEach(target => {
       if (source !== target) {
-        // Normalize both formats to handle jpg/jpeg equivalence
-        const normalizedSource = normalizeFormat(source);
-        const normalizedTarget = normalizeFormat(target);
-        
         // Only add if the normalized pair doesn't exist yet
         const pairExists = pairs.some(
           pair => 
-            normalizeFormat(pair.source) === normalizedSource && 
-            normalizeFormat(pair.target) === normalizedTarget
+            normalizeFormat(pair.source) === source && 
+            normalizeFormat(pair.target) === target
         );
         
         if (!pairExists) {
@@ -77,4 +74,10 @@ export const slugToFormat = (slug: string): { source: ImageFormat, target: Image
   } catch {
     return null;
   }
+};
+
+// Get all format permutations for sitemap generation
+export const getAllFormatPermutations = (): string[] => {
+  const pairs = generateConversionPairs();
+  return pairs.map(pair => formatToSlug(pair.source, pair.target));
 };

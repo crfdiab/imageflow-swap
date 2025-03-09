@@ -18,6 +18,8 @@ export function ConversionArea() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [convertedImage, setConvertedImage] = useState<{ url: string; blob: Blob } | null>(null);
   const [isConverting, setIsConverting] = useState(false);
+  const [conversionProgress, setConversionProgress] = useState(0);
+  const [conversionTime, setConversionTime] = useState<number | null>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -76,6 +78,11 @@ export function ConversionArea() {
   
   // Common file handling logic
   const handleImageFile = async (file: File) => {
+    // Reset states
+    setConversionProgress(0);
+    setConversionTime(null);
+    setConvertedImage(null);
+    
     const detectedFormat = await detectImageFormat(file);
     
     if (!detectedFormat) {
@@ -114,14 +121,31 @@ export function ConversionArea() {
     setIsConverting(true);
     setConvertedImage(null);
     
+    const startTime = performance.now();
+    
     try {
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setConversionProgress(prev => {
+          const newProgress = prev + (Math.random() * 10);
+          return newProgress >= 90 ? 90 : newProgress;
+        });
+      }, 100);
+      
       const result = await convertImage(file, targetFormat);
+      
+      clearInterval(progressInterval);
+      setConversionProgress(100);
       
       if (result) {
         setConvertedImage(result);
+        const endTime = performance.now();
+        const timeTaken = Math.round((endTime - startTime) / 10) / 100; // Convert to seconds with 2 decimal places
+        setConversionTime(timeTaken);
+        
         toast({
           title: "Conversion Successful",
-          description: `Image converted to ${targetFormat.toUpperCase()} format`,
+          description: `Image converted to ${targetFormat.toUpperCase()} format in ${timeTaken}s`,
         });
       }
     } catch (error) {
@@ -164,6 +188,8 @@ export function ConversionArea() {
     
     setUploadedFile(null);
     setConvertedImage(null);
+    setConversionProgress(0);
+    setConversionTime(null);
     
     // Clear file input
     if (fileInputRef.current) {
@@ -213,10 +239,12 @@ export function ConversionArea() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          aria-label="Drop zone for image upload"
+          role="region"
         >
           <div className="flex flex-col items-center space-y-4">
             <div className="p-6 rounded-full bg-primary/10 text-primary">
-              <Upload size={36} />
+              <Upload size={36} aria-hidden="true" />
             </div>
             <h3 className="text-xl font-semibold">
               Drag and Drop Your Image Here
@@ -230,8 +258,14 @@ export function ConversionArea() {
               accept="image/*"
               className="hidden"
               onChange={handleFileSelect}
+              aria-label="File input for image upload"
             />
-            <Button onClick={triggerFileInput} size="lg" className="font-medium">
+            <Button 
+              onClick={triggerFileInput} 
+              size="lg" 
+              className="font-medium"
+              aria-label="Browse files"
+            >
               Choose File
             </Button>
           </div>
@@ -242,7 +276,7 @@ export function ConversionArea() {
           <Card className="p-6 glass-card">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <File size={16} />
+                <File size={16} aria-hidden="true" />
                 <h3 className="font-medium">Original {formats?.source.toUpperCase()}</h3>
               </div>
               <span className="text-xs bg-secondary px-2 py-1 rounded-full">
@@ -254,14 +288,19 @@ export function ConversionArea() {
               {uploadedFile && (
                 <img
                   src={URL.createObjectURL(uploadedFile)}
-                  alt="Original"
+                  alt={`Original ${formats?.source.toUpperCase()} image`}
                   className="max-w-full max-h-full object-contain"
                 />
               )}
             </div>
             
             <div className="text-center">
-              <Button variant="outline" onClick={handleReset} className="w-full">
+              <Button 
+                variant="outline" 
+                onClick={handleReset} 
+                className="w-full"
+                aria-label="Upload a different image"
+              >
                 Upload Different Image
               </Button>
             </div>
@@ -271,7 +310,7 @@ export function ConversionArea() {
           <Card className="p-6 glass-card">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <ImageIcon size={16} />
+                <ImageIcon size={16} aria-hidden="true" />
                 <h3 className="font-medium">Converted {formats?.target.toUpperCase()}</h3>
               </div>
               {convertedImage && (
@@ -284,13 +323,13 @@ export function ConversionArea() {
             <div className="relative border border-border rounded-md aspect-square flex items-center justify-center overflow-hidden mb-4">
               {isConverting ? (
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <RefreshCw size={32} className="animate-spin mb-2" />
-                  <p>Converting...</p>
+                  <RefreshCw size={32} className="animate-spin mb-2" aria-hidden="true" />
+                  <p>Converting... {Math.round(conversionProgress)}%</p>
                 </div>
               ) : convertedImage ? (
                 <img
                   src={convertedImage.url}
-                  alt="Converted"
+                  alt={`Converted ${formats?.target.toUpperCase()} image`}
                   className="max-w-full max-h-full object-contain"
                 />
               ) : (
@@ -300,13 +339,23 @@ export function ConversionArea() {
               )}
             </div>
             
+            {conversionTime !== null && convertedImage && (
+              <p className="text-xs text-muted-foreground text-center mb-2">
+                Converted in {conversionTime} seconds • Size reduction: {' '}
+                {uploadedFile && convertedImage ? (
+                  (100 - (convertedImage.blob.size / uploadedFile.size * 100)).toFixed(1) + '%'
+                ) : '0%'}
+              </p>
+            )}
+            
             <div className="text-center">
               <Button 
                 onClick={handleDownload} 
                 className="w-full"
                 disabled={!convertedImage || isConverting}
+                aria-label={`Download converted ${formats?.target.toUpperCase()} image`}
               >
-                <Download size={16} className="mr-2" />
+                <Download size={16} className="mr-2" aria-hidden="true" />
                 Download
               </Button>
             </div>

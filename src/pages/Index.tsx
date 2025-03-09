@@ -27,7 +27,9 @@ const Index = () => {
     if (slug) {
       const formats = slugToFormat(slug);
       if (formats) {
-        document.title = `Convert ${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} - Convertify`;
+        // Set page title
+        const pageTitle = `Convert ${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} - Free Online Converter | Convertify`;
+        document.title = pageTitle;
         
         // Set meta description for SEO
         let metaDescription = document.querySelector('meta[name="description"]');
@@ -37,7 +39,7 @@ const Index = () => {
           document.head.appendChild(metaDescription);
         }
         metaDescription.setAttribute('content', 
-          `Convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format quickly and easily. Free, secure, and entirely browser-based with no uploads required.`
+          `Convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format online for free. No upload required - processing happens in your browser for complete privacy. High quality, instant conversion.`
         );
         
         // Set canonical link
@@ -48,6 +50,32 @@ const Index = () => {
           document.head.appendChild(canonicalLink);
         }
         canonicalLink.setAttribute('href', `https://convertify.click/${slug}`);
+        
+        // Add schema.org structured data for SEO
+        let structuredData = document.querySelector('#structured-data');
+        if (!structuredData) {
+          structuredData = document.createElement('script');
+          structuredData.setAttribute('id', 'structured-data');
+          structuredData.setAttribute('type', 'application/ld+json');
+          document.head.appendChild(structuredData);
+        }
+        
+        const schemaData = {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": `${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} Converter`,
+          "url": `https://convertify.click/${slug}`,
+          "description": `Free online tool to convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format with high quality and privacy.`,
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "Any",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        };
+        
+        structuredData.textContent = JSON.stringify(schemaData);
       }
     }
   }, [slug]);

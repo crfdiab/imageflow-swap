@@ -90,6 +90,19 @@ export const convertImage = async (
   targetFormat: ImageFormat
 ): Promise<{ url: string; blob: Blob } | null> => {
   try {
+    // Check if we can use Web Workers for heavy operations
+    const supportsWebWorker = typeof Worker !== 'undefined';
+    
+    // For larger files (>5MB), we'll try to use a Web Worker if available
+    if (supportsWebWorker && file.size > 5 * 1024 * 1024) {
+      try {
+        return await convertImageWithWebWorker(file, targetFormat);
+      } catch (error) {
+        console.warn("Web Worker conversion failed, falling back to main thread:", error);
+        // Fall back to main thread conversion
+      }
+    }
+    
     // Create image element and load the file
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -109,6 +122,15 @@ export const convertImage = async (
           });
           reject(new Error("Could not create canvas context"));
           return;
+        }
+        
+        // For transparency-supporting formats
+        if (['png', 'webp', 'gif', 'avif'].includes(targetFormat)) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          // Fill with white background for formats that don't support transparency
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
         
         ctx.drawImage(img, 0, 0);
@@ -136,6 +158,23 @@ export const convertImage = async (
             break;
           case 'bmp':
             mimeType = 'image/bmp';
+            break;
+          case 'gif':
+            mimeType = 'image/gif';
+            break;
+          case 'ico':
+            // ICO conversion requires special handling
+            // This is a basic implementation - for production, a specialized library would be better
+            if (canvas.width > 256 || canvas.height > 256) {
+              // Resize for ICO format limitations
+              const tempCanvas = document.createElement('canvas');
+              tempCanvas.width = Math.min(256, canvas.width);
+              tempCanvas.height = Math.min(256, canvas.height);
+              const tempCtx = tempCanvas.getContext('2d');
+              tempCtx?.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, tempCanvas.width, tempCanvas.height);
+              canvas = tempCanvas;
+            }
+            mimeType = 'image/png'; // Use PNG for ICO (as a fallback, actual ICO requires specific libraries)
             break;
           default:
             toast({
@@ -177,5 +216,67 @@ export const convertImage = async (
       variant: "destructive"
     });
     return null;
+  }
+};
+
+// Helper function to convert image using Web Worker (for larger files)
+// This is a placeholder - actual implementation would require a separate worker file
+const convertImageWithWebWorker = async (file: File, targetFormat: ImageFormat): Promise<{ url: string; blob: Blob }> => {
+  // In a real implementation, you'd create a Worker and send the image data
+  // For now, let's just reject to fall back to the main thread method
+  return Promise.reject(new Error("Web Worker implementation not available"));
+  
+  // Example of how this might be implemented:
+  /*
+  return new Promise((resolve, reject) => {
+    const worker = new Worker('/workers/image-converter.js');
+    
+    worker.onmessage = (event) => {
+      if (event.data.error) {
+        reject(new Error(event.data.error));
+      } else {
+        resolve({
+          url: URL.createObjectURL(event.data.blob),
+          blob: event.data.blob
+        });
+      }
+      worker.terminate();
+    };
+    
+    worker.onerror = () => {
+      reject(new Error('Worker error occurred'));
+      worker.terminate();
+    };
+    
+    worker.postMessage({
+      file,
+      targetFormat
+    });
+  });
+  */
+};
+
+// Get appropriate MIME type for a format
+export const getFormatMimeType = (format: ImageFormat): string => {
+  switch(format) {
+    case 'jpeg':
+    case 'jpg':
+      return 'image/jpeg';
+    case 'png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    case 'avif':
+      return 'image/avif';
+    case 'gif':
+      return 'image/gif';
+    case 'svg':
+      return 'image/svg+xml';
+    case 'bmp':
+      return 'image/bmp';
+    case 'ico':
+      return 'image/x-icon';
+    default:
+      return 'application/octet-stream';
   }
 };
