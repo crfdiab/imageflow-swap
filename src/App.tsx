@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet';
+import { MetaTags } from "./components/MetaTags";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
@@ -20,6 +22,9 @@ const GTM_ID = 'GTM-PFH5MKLB';
 // Your GA ID
 const GA_MEASUREMENT_ID = 'G-N2MZSTTKB4';
 
+// Your GSC verification code
+const GSC_VERIFICATION = '8-rQ4_lnC31bCaMY4LvanL05kMfaL7uI6gmpmFqEpEo';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -30,27 +35,30 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <GoogleTagManager gtmId={GTM_ID} />
-        <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/data-protection" element={<DataProtection />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/" element={<Index />} />
-          <Route path="/:slug" element={<Index />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <BackToTop />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <MetaTags searchConsoleVerification={GSC_VERIFICATION} />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <GoogleTagManager gtmId={GTM_ID} />
+          <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/data-protection" element={<DataProtection />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/:slug" element={<Index />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <BackToTop />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;
