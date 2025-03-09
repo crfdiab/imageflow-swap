@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { SlugViewer } from "@/components/DevTools/SlugViewer";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 const Index = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -128,6 +130,9 @@ const Index = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">
+          <div className="container mx-auto px-4 py-4">
+            <Breadcrumb slug={slug} />
+          </div>
           <ConversionArea />
           <div id="faq">
             <FAQSection />
@@ -199,6 +204,15 @@ const Index = () => {
             <FAQSection />
           </div>
         </section>
+        
+        {process.env.NODE_ENV === 'development' && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">
+              Development: Available Slugs
+            </h2>
+            <SlugViewer />
+          </section>
+        )}
       </main>
       <Footer />
     </div>

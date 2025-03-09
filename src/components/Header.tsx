@@ -1,14 +1,16 @@
-
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 import { IMAGE_FORMATS, formatToSlug, ImageFormat } from "@/utils/formatUtils";
+import { useParams } from "react-router-dom";
 
 interface HeaderProps {
   className?: string;
 }
 
 export function Header({ className }: HeaderProps) {
+  const { slug } = useParams<{ slug: string }>();
+
   // Most common conversion pairs for the navigation menu
   const commonConversions = [
     { source: 'png' as ImageFormat, target: 'jpeg' as ImageFormat },
