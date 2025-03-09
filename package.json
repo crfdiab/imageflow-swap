@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "npm run generate-sitemap",
+    "prebuild": "node src/utils/generateSitemap.js",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "serve": "node src/server.js",
-    "generate-sitemap": "ts-node src/utils/generateSitemap.ts"
+    "generate-sitemap": "node src/utils/generateSitemap.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
