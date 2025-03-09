@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
-import { IMAGE_FORMATS, formatToSlug } from "@/utils/formatUtils";
+import { IMAGE_FORMATS, formatToSlug, ImageFormat } from "@/utils/formatUtils";
 
 interface HeaderProps {
   className?: string;
@@ -11,11 +11,11 @@ interface HeaderProps {
 export function Header({ className }: HeaderProps) {
   // Most common conversion pairs for the navigation menu
   const commonConversions = [
-    { source: 'png', target: 'jpeg' },
-    { source: 'jpeg', target: 'png' },
-    { source: 'png', target: 'webp' },
-    { source: 'webp', target: 'png' },
-    { source: 'jpeg', target: 'webp' },
+    { source: 'png' as ImageFormat, target: 'jpeg' as ImageFormat },
+    { source: 'jpeg' as ImageFormat, target: 'png' as ImageFormat },
+    { source: 'png' as ImageFormat, target: 'webp' as ImageFormat },
+    { source: 'webp' as ImageFormat, target: 'png' as ImageFormat },
+    { source: 'jpeg' as ImageFormat, target: 'webp' as ImageFormat },
   ];
 
   return (
@@ -27,7 +27,7 @@ export function Header({ className }: HeaderProps) {
               Convertify
             </span>
           </Link>
-          <ThemeToggle className="md:hidden" />
+          <ThemeToggle />
         </div>
         
         <nav className="flex flex-col md:flex-row items-start md:items-center mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-6">

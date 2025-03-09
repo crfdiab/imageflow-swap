@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 import { ImageFormat, isSupportedFormat, normalizeFormat } from "./formatUtils";
 
@@ -108,7 +107,7 @@ export const convertImage = async (
       const img = new Image();
       img.onload = () => {
         // Create canvas with the same dimensions as the image
-        const canvas = document.createElement('canvas');
+        let canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
         
@@ -172,7 +171,7 @@ export const convertImage = async (
               tempCanvas.height = Math.min(256, canvas.height);
               const tempCtx = tempCanvas.getContext('2d');
               tempCtx?.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, tempCanvas.width, tempCanvas.height);
-              canvas = tempCanvas;
+              canvas = tempCanvas; // Now this works because canvas is declared with 'let'
             }
             mimeType = 'image/png'; // Use PNG for ICO (as a fallback, actual ICO requires specific libraries)
             break;
@@ -220,7 +219,6 @@ export const convertImage = async (
 };
 
 // Helper function to convert image using Web Worker (for larger files)
-// This is a placeholder - actual implementation would require a separate worker file
 const convertImageWithWebWorker = async (file: File, targetFormat: ImageFormat): Promise<{ url: string; blob: Blob }> => {
   // In a real implementation, you'd create a Worker and send the image data
   // For now, let's just reject to fall back to the main thread method
