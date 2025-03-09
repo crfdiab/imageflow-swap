@@ -11,6 +11,10 @@ import Privacy from "./pages/Privacy";
 import DataProtection from "./pages/DataProtection";
 import Terms from "./pages/Terms";
 import { BackToTop } from "./components/BackToTop";
+import { GoogleTagManager } from "./components/GoogleTagManager";
+
+// Your GTM ID
+const GTM_ID = 'GTM-PFH5MKLB';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +31,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <GoogleTagManager gtmId={GTM_ID} />
         <Routes>
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
