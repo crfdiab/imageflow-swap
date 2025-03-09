@@ -14,6 +14,7 @@ import { BackToTop } from "./components/BackToTop";
 import { GoogleTagManager } from "./components/GoogleTagManager";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { SchemaMarkup } from "./components/SchemaMarkup";
+import { OpenGraphTags } from "./components/OpenGraphTags";
 
 // Your GTM ID
 const GTM_ID = 'GTM-PFH5MKLB';
@@ -55,6 +56,7 @@ const App = () => (
         <GoogleTagManager gtmId={GTM_ID} />
         <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
         <SchemaMarkup />
+        <OpenGraphTags />
         <Routes>
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
