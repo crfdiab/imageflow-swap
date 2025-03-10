@@ -35,7 +35,7 @@ export function Footer({ className }: FooterProps) {
           {/* About */}
           <div>
             <h3 className="text-lg font-semibold mb-4">About Convertify</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-foreground opacity-90 text-sm">
               Convertify offers free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more with no upload required - all processing happens right in your browser.
             </p>
           </div>
@@ -48,7 +48,7 @@ export function Footer({ className }: FooterProps) {
                 <li key={`${source}-${target}`}>
                   <Link 
                     to={`/${formatToSlug(source, target)}`} 
-                    className="text-sm hover:text-primary transition-colors"
+                    className="text-sm text-foreground hover:text-primary transition-colors"
                     onClick={handleLinkClick}
                   >
                     {source.toUpperCase()} to {target.toUpperCase()}
@@ -107,7 +107,7 @@ export function Footer({ className }: FooterProps) {
         </div>
         
         <div className="border-t border-border/40 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+          <p className="text-sm text-foreground opacity-90 mb-4 md:mb-0">
             © {new Date().getFullYear()} Convertify. All rights reserved.
           </p>
           <div className="flex items-center space-x-4">
