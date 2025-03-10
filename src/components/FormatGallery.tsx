@@ -46,7 +46,7 @@ export function FormatGallery() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground opacity-70" />
           <Input
             placeholder="Search formats..."
             value={filter}
@@ -83,9 +83,9 @@ export function FormatGallery() {
                 <Card className="overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-center space-x-2">
-                      <span className="font-medium text-sm uppercase">{source}</span>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium text-sm uppercase">{target}</span>
+                      <span className="font-medium text-sm uppercase text-foreground">{source}</span>
+                      <ArrowRight className="h-4 w-4 text-foreground opacity-70" />
+                      <span className="font-medium text-sm uppercase text-foreground">{target}</span>
                     </div>
                   </CardContent>
                 </Card>

@@ -124,27 +124,27 @@ export function ConversionArea() {
     if (files.length > 0) {
       const firstFile = files[0];
       const detectedFormat = await detectImageFormat(firstFile);
+    
+    if (!detectedFormat) {
+      toast({
+        title: "Format detection failed",
+        description: "Unable to determine the image format",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // If detected format doesn't match the expected source format, redirect
+    if (normalizeFormat(detectedFormat) !== normalizeFormat(formats.source)) {
+      const newSlug = formatToSlug(detectedFormat, formats.target);
       
-      if (!detectedFormat) {
-        toast({
-          title: "Format detection failed",
-          description: "Unable to determine the image format",
-          variant: "destructive"
-        });
-        return;
-      }
+      toast({
+        title: "Redirecting to correct converter",
+        description: `Detected ${detectedFormat.toUpperCase()} format, redirecting to the appropriate converter`,
+      });
       
-      // If detected format doesn't match the expected source format, redirect
-      if (normalizeFormat(detectedFormat) !== normalizeFormat(formats.source)) {
-        const newSlug = formatToSlug(detectedFormat, formats.target);
-        
-        toast({
-          title: "Redirecting to correct converter",
-          description: `Detected ${detectedFormat.toUpperCase()} format, redirecting to the appropriate converter`,
-        });
-        
-        navigate(`/${newSlug}`, { replace: true });
-        return;
+      navigate(`/${newSlug}`, { replace: true });
+      return;
       }
     }
     
@@ -172,7 +172,7 @@ export function ConversionArea() {
         setConversionProgress(fileProgress);
         
         // Convert the current file
-        const result = await convertImage(file, targetFormat);
+      const result = await convertImage(file, targetFormat);
         
         if (result) {
           results.push({ file, ...result });
@@ -182,14 +182,14 @@ export function ConversionArea() {
       setConversionProgress(100);
       setConvertedImages(results);
       
-      const endTime = performance.now();
-      const timeTaken = Math.round((endTime - startTime) / 10) / 100; // Convert to seconds with 2 decimal places
-      setConversionTime(timeTaken);
-      
-      toast({
-        title: "Conversion Successful",
+        const endTime = performance.now();
+        const timeTaken = Math.round((endTime - startTime) / 10) / 100; // Convert to seconds with 2 decimal places
+        setConversionTime(timeTaken);
+        
+        toast({
+          title: "Conversion Successful",
         description: `${results.length} ${results.length === 1 ? 'image' : 'images'} converted to ${targetFormat.toUpperCase()} format in ${timeTaken}s`,
-      });
+        });
     } catch (error) {
       toast({
         title: "Conversion failed",
@@ -385,48 +385,48 @@ export function ConversionArea() {
       {/* File upload area */}
       {!uploadedFiles.length ? (
         <div>
-          <Card
-            ref={dropAreaRef}
-            className={cn(
-              "border-2 border-dashed p-12 text-center transition-all duration-200 glass-card",
-              isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-background/80"
-            )}
-            onDragOver={handleDragOver}
+        <Card
+          ref={dropAreaRef}
+          className={cn(
+            "border-2 border-dashed p-12 text-center transition-all duration-200 glass-card",
+            isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-background/80"
+          )}
+          onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            aria-label="Drop zone for image upload"
-            role="region"
-          >
-            <div className="flex flex-col items-center space-y-4">
-              <div className="p-6 rounded-full bg-primary/10 text-primary">
-                <Upload size={36} aria-hidden="true" />
-              </div>
-              <h3 className="text-xl font-semibold">
-                Drag and Drop Your Images Here
-              </h3>
-              <p className="text-muted-foreground mb-4 max-w-md">
-                or click the button below to browse your files (up to 50 images at once)
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handleFileSelect}
-                aria-label="File input for image upload"
-              />
-              <Button 
-                onClick={triggerFileInput} 
-                size="lg" 
-                className="font-medium"
-                aria-label="Browse files"
-              >
-                Choose Files
-              </Button>
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          aria-label="Drop zone for image upload"
+          role="region"
+        >
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-6 rounded-full bg-primary/10 text-primary">
+              <Upload size={36} aria-hidden="true" />
             </div>
-          </Card>
+              <h2 className="text-xl font-semibold">
+                Drag and Drop Your {formats?.source.toUpperCase()} Images Here
+              </h2>
+            <p className="text-muted-foreground mb-4 max-w-md">
+                or click the button below to browse your files (up to 50 images at once)
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+                multiple
+              className="hidden"
+              onChange={handleFileSelect}
+              aria-label="File input for image upload"
+            />
+            <Button 
+              onClick={triggerFileInput} 
+              size="lg" 
+              className="font-medium"
+              aria-label="Browse files"
+            >
+                Choose Files
+            </Button>
+          </div>
+        </Card>
         </div>
       ) : (
         <div className="space-y-8">
@@ -444,7 +444,7 @@ export function ConversionArea() {
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                onClick={handleReset}
+                onClick={handleReset} 
                 aria-label="Upload different images"
               >
                 Upload Different Images
@@ -508,30 +508,30 @@ export function ConversionArea() {
                 </div>
                 
                 <div className="relative border border-border rounded-md aspect-square flex items-center justify-center overflow-hidden mb-2">
-                  <img
+                <img
                     src={URL.createObjectURL(file)}
                     alt={`Original ${formats?.source.toUpperCase()} image`}
-                    className="max-w-full max-h-full object-contain"
-                  />
+                  className="max-w-full max-h-full object-contain"
+                />
                 </div>
                 
                 <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
                   <span>Original: {(file.size / 1024).toFixed(1)} KB</span>
                   {convertedImages[index] && (
                     <span>Converted: {(convertedImages[index].blob.size / 1024).toFixed(1)} KB</span>
-                  )}
-                </div>
-                
+              )}
+            </div>
+            
                 {convertedImages[index] ? (
-                  <Button 
+              <Button 
                     size="sm"
-                    className="w-full"
+                className="w-full"
                     onClick={() => handleDownloadSingle(index)}
-                    aria-label={`Download converted ${formats?.target.toUpperCase()} image`}
-                  >
+                aria-label={`Download converted ${formats?.target.toUpperCase()} image`}
+              >
                     <Download size={14} className="mr-2" aria-hidden="true" />
-                    Download
-                  </Button>
+                Download
+              </Button>
                 ) : (
                   <div className="h-9 flex items-center justify-center">
                     {isConverting ? (
@@ -544,9 +544,9 @@ export function ConversionArea() {
                         Waiting for conversion...
                       </span>
                     )}
-                  </div>
+            </div>
                 )}
-              </Card>
+          </Card>
             ))}
           </div>
         </div>
