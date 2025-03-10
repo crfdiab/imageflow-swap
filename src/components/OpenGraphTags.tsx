@@ -21,11 +21,14 @@ export function OpenGraphTags() {
         const formats = slugToFormat(slug);
         if (formats) {
           const { source, target } = formats;
-          title = `Convert ${source.toUpperCase()} to ${target.toUpperCase()} - Free Online Converter`;
-          description = `Convert ${source.toUpperCase()} images to ${target.toUpperCase()} format online for free. No upload required - secure browser-based conversion.`;
+          title = `Convert ${source.toUpperCase()} to ${target.toUpperCase()} - Free Online Converter | Convertify`;
+          description = `Convert ${source.toUpperCase()} images to ${target.toUpperCase()} format online for free. No upload required - secure browser-based conversion with batch processing up to 50 images.`;
           url = `https://convertify.click/${slug}`;
         }
       }
+      
+      // Update document title
+      document.title = title;
       
       // Set Open Graph tags
       setMetaTag('og:title', title);
@@ -35,6 +38,7 @@ export function OpenGraphTags() {
       setMetaTag('og:image', 'https://convertify.click/og-image.png');
       setMetaTag('og:image:width', '1200');
       setMetaTag('og:image:height', '630');
+      setMetaTag('og:site_name', 'Convertify');
       
       // Set Twitter Card tags
       setMetaTag('twitter:card', 'summary_large_image');
@@ -44,9 +48,16 @@ export function OpenGraphTags() {
       
       // Set regular meta tags
       setMetaTag('description', description);
+      setMetaTag('author', 'Convertify');
       
-      // Set page title
-      document.title = title;
+      // Set canonical URL
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', url);
     };
     
     setupMetaTags();
