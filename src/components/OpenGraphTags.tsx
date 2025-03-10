@@ -12,8 +12,8 @@ export function OpenGraphTags() {
     // Set up meta tags
     const setupMetaTags = () => {
       // Default values for homepage
-      let title = 'Convertify - Free Online Image Format Converter';
-      let description = 'Convert images between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload needed - all processing happens in your browser for privacy.';
+      let title = 'Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images';
+      let description = 'Convert images between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload needed - all processing happens in your browser for privacy.';
       let url = 'https://convertify.click';
       
       // If not homepage and has a valid slug, customize for the specific converter
@@ -21,8 +21,8 @@ export function OpenGraphTags() {
         const formats = slugToFormat(slug);
         if (formats) {
           const { source, target } = formats;
-          title = `Convert ${source.toUpperCase()} to ${target.toUpperCase()} - Free Online Converter | Convertify`;
-          description = `Convert ${source.toUpperCase()} images to ${target.toUpperCase()} format online for free. No upload required - secure browser-based conversion with batch processing up to 50 images.`;
+          title = `Convert ${source.toUpperCase()} To ${target.toUpperCase()} Free Online 50 Images Bulk In-Time - Convertify`;
+          description = `Convert ${source.toUpperCase()} to ${target.toUpperCase()} format online for free. Process up to 50 images at once with no upload required - all conversion happens in your browser for complete privacy. Fast, secure, and high quality.`;
           url = `https://convertify.click/${slug}`;
         }
       }

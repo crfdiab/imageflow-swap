@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { SlugViewer } from "@/components/DevTools/SlugViewer";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { FormatGallery } from "@/components/FormatGallery";
+import { ScrollToTopLink } from "@/components/ScrollToTopLink";
 
 const Index = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,11 +42,11 @@ const Index = () => {
     if (slug) {
       const formats = slugToFormat(slug);
       if (formats) {
-        // Set page title
-        const pageTitle = `Convert ${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} - Free Online Converter | Convertify`;
+        // Set page title with new format
+        const pageTitle = `Convert ${formats.source.toUpperCase()} To ${formats.target.toUpperCase()} Free Online 50 Images Bulk In-Time - Convertify`;
         document.title = pageTitle;
         
-        // Set meta description for SEO
+        // Set meta description for SEO with enhanced CTR
         let metaDescription = document.querySelector('meta[name="description"]');
         if (!metaDescription) {
           metaDescription = document.createElement('meta');
@@ -53,7 +54,7 @@ const Index = () => {
           document.head.appendChild(metaDescription);
         }
         metaDescription.setAttribute('content', 
-          `Convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format online for free. No upload required - processing happens in your browser for complete privacy. High quality, instant conversion.`
+          `Convert ${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} format online for free. Process up to 50 images at once with no upload required - all conversion happens in your browser for complete privacy. Fast, secure, and high quality.`
         );
         
         // Set canonical link
@@ -77,9 +78,9 @@ const Index = () => {
         const schemaData = {
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": `${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} Converter`,
+          "name": `Convert ${formats.source.toUpperCase()} To ${formats.target.toUpperCase()} Free Online 50 Images Bulk In-Time`,
           "url": `https://convertify.click/${slug}`,
-          "description": `Free online tool to convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format with high quality and privacy.`,
+          "description": `Free online tool to convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format. Process up to 50 images at once with high quality and privacy.`,
           "applicationCategory": "MultimediaApplication",
           "operatingSystem": "Any",
           "offers": {
@@ -92,8 +93,8 @@ const Index = () => {
         structuredData.textContent = JSON.stringify(schemaData);
       }
     } else {
-      // Homepage metadata
-      document.title = "Convertify - Free Online Image Format Conversion Tools";
+      // Homepage metadata with enhanced title and description
+      document.title = "Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images";
       
       let metaDescription = document.querySelector('meta[name="description"]');
       if (!metaDescription) {
@@ -102,7 +103,7 @@ const Index = () => {
         document.head.appendChild(metaDescription);
       }
       metaDescription.setAttribute('content', 
-        "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy."
+        "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required - all processing happens right in your browser for complete privacy."
       );
       
       let canonicalLink = document.querySelector('link[rel="canonical"]');
@@ -123,6 +124,14 @@ const Index = () => {
       !(format === 'jpg' && sourceFormat === 'jpeg') && 
       !(sourceFormat === 'jpg' && format === 'jpeg')
     ) as ImageFormat[];
+  };
+  
+  // Function to scroll to top when link is clicked
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
   
   // If we have a slug, show the converter page
@@ -166,7 +175,7 @@ const Index = () => {
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Convert between various image formats with our fast, free, and secure browser-based tools.
-            No uploads required - all processing happens right in your browser.
+            Process up to 50 images at once with no upload required - all conversion happens right in your browser.
           </p>
         </section>
         
@@ -185,6 +194,7 @@ const Index = () => {
                     key={targetFormat}
                     to={`/${conversionSlug}`}
                     className="no-underline text-foreground"
+                    onClick={handleLinkClick}
                   >
                     <Card className={cn(
                       "p-4 flex flex-col items-center justify-center text-center h-full transition-all duration-300",
