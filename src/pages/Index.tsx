@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SlugViewer } from "@/components/DevTools/SlugViewer";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { FormatGallery } from "@/components/FormatGallery";
 
 const Index = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -138,6 +139,16 @@ const Index = () => {
             <FAQSection />
           </div>
           <RelatedConverters />
+          
+          {/* Add Format Gallery Section */}
+          <section className="py-12 bg-muted/30">
+            <div className="container mx-auto px-4">
+              <h2 className="text-2xl font-bold mb-6 text-center">
+                All Available Conversion Formats
+              </h2>
+              <FormatGallery />
+            </div>
+          </section>
         </main>
         <Footer />
       </div>
