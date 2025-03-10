@@ -19,28 +19,36 @@ export function Header({ className }: HeaderProps) {
     { source: 'webp' as ImageFormat, target: 'png' as ImageFormat },
     { source: 'jpeg' as ImageFormat, target: 'webp' as ImageFormat },
   ];
+  
+  // Function to scroll to top when link is clicked
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <header className={cn("w-full border-b border-border/40 backdrop-blur-sm sticky top-0 z-50", className)}>
       <div className="container mx-auto flex flex-col md:flex-row md:items-center md:justify-between py-4 px-4 sm:px-6">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2" onClick={handleLinkClick}>
             <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-pulse-slow">
               Convertify
             </span>
           </Link>
-          <ThemeToggle />
+          <ThemeToggle className="md:hidden" />
         </div>
         
         <nav className="flex flex-col md:flex-row items-start md:items-center mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-6">
           <div className="flex items-center space-x-6">
-            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors" onClick={handleLinkClick}>
               Tools
             </Link>
-            <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors" onClick={handleLinkClick}>
               About Us
             </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors" onClick={handleLinkClick}>
               Contact Us
             </Link>
             <div className="hidden md:block">

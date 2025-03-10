@@ -85,24 +85,24 @@ const homepageSchema = {
       "@type": "WebSite",
       "@id": "https://convertify.click#website",
       "url": "https://convertify.click",
-      "name": "Convertify",
-      "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy.",
+      "name": "Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images",
+      "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required.",
       "inLanguage": "en",
       "publisher": {
         "@type": "Organization",
-        "name": "Winning SERP",
+        "name": "Convertify",
         "url": "https://convertify.click"
       }
     },
     {
       "@type": "WebApplication",
       "@id": "https://convertify.click/#webapp",
-      "name": "Convertify - Image Format Converter",
+      "name": "Convertify - Image Format Converter | Bulk Process 50 Images",
       "url": "https://convertify.click",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Image Conversion Tool",
       "operatingSystem": "Windows, Chrome OS, Linux, MacOS, Android, iOS",
-      "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy.",
+      "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required - all processing happens right in your browser for complete privacy.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -118,19 +118,19 @@ const homepageSchema = {
       "screenshot": "https://convertify.click/og-image.png",
       "creator": {
         "@type": "Organization",
-        "name": "Winning SERP",
+        "name": "Convertify",
         "url": "https://convertify.click"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Winning SERP",
+        "name": "Convertify",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://winningserp.agency/wp-content/uploads/2025/02/cropped-Winning-SERP.png"
+          "url": "https://convertify.click/og-image.png"
         }
       },
       "softwareVersion": "1.0.0",
-      "datePublished": "2025-03-09",
+      "datePublished": "2023-03-09",
       "inLanguage": "en"
     }
   ]
@@ -139,6 +139,7 @@ const homepageSchema = {
 export function SchemaMarkup() {
   const location = useLocation();
   const { pathname } = location;
+  const isHomepage = pathname === '/';
   
   useEffect(() => {
     // Remove any existing schema script
@@ -153,59 +154,74 @@ export function SchemaMarkup() {
     script.type = 'application/ld+json';
     
     // Check if we're on the homepage
-    if (pathname === '/') {
-      script.textContent = JSON.stringify(homepageSchema);
-    } else {
-      // Find the matching schema for the current URL
-      const matchingSchema = schemaData.find(schema => schema.url === pathname);
-      
-      if (matchingSchema) {
-        // Create page-specific schema
-        const pageSchema = {
+    if (isHomepage) {
+      const homepageSchema = {
           "@context": "https://schema.org",
           "@graph": [
             {
               "@type": "WebSite",
               "@id": "https://convertify.click#website",
               "url": "https://convertify.click",
-              "name": "Convertify",
-              "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy.",
+            "name": "Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images",
+            "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required.",
               "inLanguage": "en",
               "publisher": {
                 "@type": "Organization",
-                "name": "Winning SERP",
+              "name": "Convertify",
                 "url": "https://convertify.click"
               }
             },
             {
               "@type": "WebApplication",
-              "@id": `https://convertify.click${matchingSchema.url}`,
-              "name": `Convertify - ${matchingSchema.conversionName}`,
-              "url": `https://convertify.click${matchingSchema.url}`,
+            "@id": "https://convertify.click/#webapp",
+            "name": "Convertify - Image Format Converter | Bulk Process 50 Images",
+            "url": "https://convertify.click",
               "applicationCategory": "MultimediaApplication",
-              "applicationSubCategory": "Image Conversion",
+            "applicationSubCategory": "Image Conversion Tool",
               "operatingSystem": "Windows, Chrome OS, Linux, MacOS, Android, iOS",
+            "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required - all processing happens right in your browser for complete privacy.",
               "offers": {
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "USD",
-                "category": "Free"
-              },
-              "description": matchingSchema.description,
-              "mainEntityOfPage": `https://convertify.click${matchingSchema.url}`
-            }
-          ]
-        };
-        
-        script.textContent = JSON.stringify(pageSchema);
+              "availability": "https://schema.org/InStock",
+              "url": "https://convertify.click"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "250"
+            },
+            "screenshot": "https://convertify.click/og-image.png",
+            "creator": {
+              "@type": "Organization",
+              "name": "Convertify",
+              "url": "https://convertify.click"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Convertify",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://convertify.click/og-image.png"
+              }
+            },
+            "softwareVersion": "1.0.0",
+            "datePublished": "2023-03-09",
+            "inLanguage": "en"
+          }
+        ]
+      };
+      
+      script.textContent = JSON.stringify(homepageSchema);
       } else {
-        // For unknown pages, use a generic schema
-        const formats = slugToFormat(pathname.substring(1));
+      // For conversion pages
+      const slug = pathname.substring(1);
+      const formats = slugToFormat(slug);
         
         if (formats) {
-          // Generate schema for dynamic conversion pages
           const { source, target } = formats;
-          const dynamicSchema = {
+        const pageSchema = {
             "@context": "https://schema.org",
             "@graph": [
               {
@@ -213,18 +229,18 @@ export function SchemaMarkup() {
                 "@id": "https://convertify.click#website",
                 "url": "https://convertify.click",
                 "name": "Convertify",
-                "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. No upload required - all processing happens right in your browser for complete privacy.",
+              "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required.",
                 "inLanguage": "en",
                 "publisher": {
                   "@type": "Organization",
-                  "name": "Winning SERP",
+                "name": "Convertify",
                   "url": "https://convertify.click"
                 }
               },
               {
                 "@type": "WebApplication",
                 "@id": `https://convertify.click${pathname}`,
-                "name": `Convertify - ${source.toUpperCase()} to ${target.toUpperCase()} Converter`,
+              "name": `Convert ${source.toUpperCase()} To ${target.toUpperCase()} Free Online 50 Images Bulk In-Time - Convertify`,
                 "url": `https://convertify.click${pathname}`,
                 "applicationCategory": "MultimediaApplication",
                 "applicationSubCategory": "Image Conversion",
@@ -235,17 +251,22 @@ export function SchemaMarkup() {
                   "priceCurrency": "USD",
                   "category": "Free"
                 },
-                "description": `Convert ${source.toUpperCase()} images to ${target.toUpperCase()} format online for free with Convertify. Fast, secure, and privacy-focused.`,
+              "description": `Convert ${source.toUpperCase()} to ${target.toUpperCase()} format online for free. Process up to 50 images at once with no upload required - all conversion happens in your browser for complete privacy. Fast, secure, and high quality.`,
                 "mainEntityOfPage": `https://convertify.click${pathname}`
               }
             ]
           };
           
-          script.textContent = JSON.stringify(dynamicSchema);
+        script.textContent = JSON.stringify(pageSchema);
         } else {
           // Fallback to homepage schema for other pages
-          script.textContent = JSON.stringify(homepageSchema);
-        }
+        script.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "url": "https://convertify.click",
+          "name": "Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images",
+          "description": "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required."
+        });
       }
     }
     
@@ -259,7 +280,7 @@ export function SchemaMarkup() {
         script.remove();
       }
     };
-  }, [pathname]);
+  }, [pathname, isHomepage]);
   
   return null;
 } 

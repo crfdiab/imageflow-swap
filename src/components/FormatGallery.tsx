@@ -34,6 +34,14 @@ export function FormatGallery() {
     return matchesFilter && matchesTab;
   });
   
+  // Function to scroll to top when link is clicked
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4">
@@ -71,7 +79,7 @@ export function FormatGallery() {
         <TabsContent value={activeTab} className="mt-0">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {filteredCombinations.map(({ source, target, slug }) => (
-              <Link key={slug} to={`/${slug}`}>
+              <Link key={slug} to={`/${slug}`} onClick={handleLinkClick}>
                 <Card className="overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-center space-x-2">

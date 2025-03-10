@@ -16,6 +16,7 @@ import { GoogleTagManager } from "./components/GoogleTagManager";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { SchemaMarkup } from "./components/SchemaMarkup";
 import { OpenGraphTags } from "./components/OpenGraphTags";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 // Your GTM ID
 const GTM_ID = 'GTM-PFH5MKLB';
@@ -126,29 +127,31 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <GoogleTagManager gtmId={GTM_ID} />
-          <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
-          <SchemaMarkup />
-          <OpenGraphTags />
-          <Routes>
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/data-protection" element={<DataProtection />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/:slug" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BackToTop />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="system" storageKey="convertify-theme">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <GoogleTagManager gtmId={GTM_ID} />
+            <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+            <SchemaMarkup />
+            <OpenGraphTags />
+            <Routes>
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/data-protection" element={<DataProtection />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/:slug" element={<Index />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <BackToTop />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
