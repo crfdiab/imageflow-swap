@@ -48,7 +48,7 @@ export function FAQSection() {
     },
     {
       question: "Can I convert multiple images at once?",
-      answer: "Currently, Convertify processes one image at a time to ensure the highest quality conversion. We're working on batch conversion functionality for a future update.",
+      answer: "Yes, you can convert 50 images at once. Just drag and drop or click to browse your files. The converter will process all the images you upload at once.",
     },
     {
       question: "What if my image format isn't detected correctly?",
