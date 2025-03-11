@@ -103,7 +103,7 @@ const Index = () => {
       }
     } else {
       // Homepage metadata with enhanced title and description
-      document.title = "Convertify - Free Online Image Format Conversion Tools | Bulk Convert 50 Images";
+      document.title = t('pages.home.title');
       
       let metaDescription = document.querySelector('meta[name="description"]');
       if (!metaDescription) {
