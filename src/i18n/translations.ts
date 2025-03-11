@@ -50,6 +50,7 @@ interface Translations {
     imagesSelected: string;
     totalSize: string;
     noReduction: string;
+    uploadDescription: string;
     footer: {
       aboutConvertify: string;
       popularConversions: string;
@@ -160,13 +161,14 @@ const en: Translations = {
   imagesSelected: "{count} {count, plural, one {image} other {images}} selected",
   totalSize: "Total size: {size} KB",
   noReduction: "no reduction",
+  uploadDescription: "Upload your images and we'll convert them with the best quality and smallest file size. Process up to 50 files at once!",
   footer: {
   aboutConvertify: "About Convertify",
   popularConversions: "Popular Conversions",
   quickLinks: "Quick Links",
   contact: "Contact",
   contactText: "Have questions or feedback? We'd love to hear from you.",
-  copyright: "© {year} Convertify. All rights reserved.",
+  copyright: "  {year} Convertify. All rights reserved.",
   privacy: "Privacy",
   terms: "Terms",
   }
@@ -266,31 +268,32 @@ const en: Translations = {
   download: "Descargar",
   original: "Original",
   converted: "Convertido",
-  conversionStats: "Convertido {count} {count, plural, one {imagen} other {imágenes}} en {time} segundos • Reducción de tamaño promedio: {reduction}",
-  imagesSelected: "{count} {count, plural, one {imagen seleccionada} other {imágenes seleccionadas}}",
+  conversionStats: "Convertido {count} {count, plural, one {imagen} other {imágenes}} en {time} segundos • Reducción promedio de tamaño: {reduction}",
+  imagesSelected: "{count} {count, plural, one {imagen} other {imágenes}} seleccionadas",
   totalSize: "Tamaño total: {size} KB",
   noReduction: "sin reducción",
+  uploadDescription: "Sube tus imágenes y las convertiremos con la mejor calidad y el menor tamaño de archivo. ¡Procesa hasta 50 archivos a la vez!",
   footer: {
   aboutConvertify: "Sobre Convertify",
   popularConversions: "Conversiones Populares",
   quickLinks: "Enlaces Rápidos",
   contact: "Contacto",
   contactText: "¿Tienes preguntas o comentarios? Nos encantaría saber de ti.",
-  copyright: "© {year} Convertify. Todos los derechos reservados.",
+  copyright: "  {year} Convertify. Todos los derechos reservados.",
   privacy: "Privacidad",
   terms: "Términos",
   }
   },
   pages: {
   home: {
-  title: "Conversión de Formatos de Imagen en Línea Gratis",
-  description: "Convierte entre varios formatos de imagen con nuestras herramientas rápidas, gratuitas y seguras basadas en navegador. Procesa hasta 50 imágenes a la vez sin necesidad de subir archivos - todo el procesamiento ocurre en tu navegador.",
+  title: "Convertify - Herramientas Gratuitas de Conversión de Formatos de Imágenes en Línea | Conversión Masiva de 50 Imágenes",
+  description: "Convierte entre varios formatos de imagen con nuestras herramientas rápidas, gratuitas y seguras basadas en el navegador. Procesa hasta 50 imágenes a la vez sin necesidad de subir archivos; toda la conversión ocurre directamente en tu navegador.",
   toolsTitle: "Herramientas Gratuitas de Conversión de Imágenes {format}",
   },
   converter: {
   titleTemplate: "Convertir {source} A {target} Gratis En Línea 50 Imágenes En Lote - Convertify",
   descriptionTemplate: "Convierte imágenes {source} a formato {target} en línea gratis. Procesa hasta 50 imágenes a la vez sin necesidad de subir archivos - toda la conversión ocurre en tu navegador para total privacidad.",
-  uploadText: "Sube tus imágenes {source} y las convertiremos a formato {target} con la mejor calidad y el menor tamaño de archivo. ¡Procesa hasta 50 archivos a la vez!",
+  uploadText: "Sube tus imágenes {source} y las convertiremos a formato {target} con la mejor calidad y el menor tamaño de archivo. Procesa hasta 50 archivos a la vez!",
   },
   about: {
   title: "Sobre Nosotros | Convertify",
@@ -373,8 +376,8 @@ const en: Translations = {
   ...en.pages,
   home: {
   ...en.pages.home,
-  title: "Conversion de formats d'image en ligne gratuite",
-  description: "Convertissez entre différents formats d'image avec nos outils rapides, gratuits et sécurisés basés sur navigateur.",
+  title: "Convertify - Outils de Conversion de Formats d'Images en Ligne Gratuits | Conversion en Masse de 50 Images",
+  description: "Convertissez entre divers formats d'image avec nos outils rapides, gratuits et sécurisés basés sur le navigateur. Traitez jusqu'à 50 images à la fois sans téléchargement requis - toute la conversion se fait directement dans votre navigateur.",
   }
   }
   };
@@ -410,21 +413,22 @@ const fr: Translations = {
     imagesSelected: "{count} {count, plural, one {image sélectionnée} other {images sélectionnées}}",
     totalSize: "Taille totale : {size} Ko",
     noReduction: "pas de réduction",
+    uploadDescription: "Téléchargez vos images et nous les convertirons avec la meilleure qualité et la plus petite taille de fichier. Traitez jusqu'à 50 fichiers à la fois !",
     footer: {
       aboutConvertify: "À propos de Convertify",
       popularConversions: "Conversions populaires",
       quickLinks: "Liens rapides",
       contact: "Contact",
       contactText: "Des questions ou des commentaires ? Nous aimerions avoir de vos nouvelles.",
-      copyright: "© {year} Convertify. Tous droits réservés.",
+      copyright: "  {year} Convertify. Tous droits réservés.",
       privacy: "Confidentialité",
       terms: "Conditions",
     }
   },
   pages: {
     home: {
-      title: "Conversion de formats d'image en ligne gratuite",
-      description: "Convertissez entre différents formats d'image avec nos outils rapides, gratuits et sécurisés basés sur navigateur. Traitez jusqu'à 50 images à la fois sans téléchargement requis - toute la conversion se fait directement dans votre navigateur.",
+      title: "Convertify - Outils de Conversion de Formats d'Images en Ligne Gratuits | Conversion en Masse de 50 Images",
+      description: "Convertissez entre divers formats d'image avec nos outils rapides, gratuits et sécurisés basés sur le navigateur. Traitez jusqu'à 50 images à la fois sans téléchargement requis - toute la conversion se fait directement dans votre navigateur.",
       toolsTitle: "Outils gratuits de conversion d'images {format}",
     },
     converter: {
@@ -475,7 +479,7 @@ const fr: Translations = {
       },
       fileSize: {
         question: "Quelle est la taille maximale de fichier que je peux convertir ?",
-        answer: "Vous pouvez convertir des images jusqu'à 10 Mo chacune, avec une taille totale de lot allant jusqu'à 50 images par conversion. Pour les fichiers plus volumineux, vous devrez peut-être les comprimer d'abord."
+        answer: "Vous pouvez convertir des images jusqu'à 10MB chacune, avec une taille totale de lot allant jusqu'à 50 images par conversion. Pour les fichiers plus volumineux, vous devrez peut-être les compresser d'abord."
       },
       quality: {
         question: "Vais-je perdre en qualité d'image pendant la conversion ?",
@@ -483,7 +487,7 @@ const fr: Translations = {
       },
       browsers: {
         question: "Quels navigateurs sont pris en charge ?",
-        answer: "Convertify fonctionne sur tous les navigateurs modernes, y compris Chrome, Firefox, Safari et Edge. Pour une meilleure expérience, nous recommandons d'utiliser la dernière version de votre navigateur préféré."
+        answer: "Convertify fonctionne sur tous les navigateurs modernes, y compris Chrome, Firefox, Safari et Edge. Pour la meilleure expérience, nous recommandons d'utiliser la dernière version de votre navigateur préféré."
       }
     }
   }
@@ -526,20 +530,20 @@ const de: Translations = {
       quickLinks: "Schnellzugriff",
       contact: "Kontakt",
       contactText: "Haben Sie Fragen oder Feedback? Wir würden gerne von Ihnen hören.",
-      copyright: "© {year} Convertify. Alle Rechte vorbehalten.",
+      copyright: "  {year} Convertify. Alle Rechte vorbehalten.",
       privacy: "Datenschutz",
       terms: "Bedingungen",
     }
   },
   pages: {
     home: {
-      title: "Kostenlose Online-Bildformatkonvertierung",
-      description: "Konvertieren Sie zwischen verschiedenen Bildformaten mit unseren schnellen, kostenlosen und sicheren browserbasierten Tools. Verarbeiten Sie bis zu 50 Bilder gleichzeitig ohne Upload - die gesamte Konvertierung findet direkt in Ihrem Browser statt.",
+      title: "Convertify - Kostenlose Online-Bildformat-Konvertierungstools | Massenkonvertierung von 50 Bildern",
+      description: "Konvertieren Sie zwischen verschiedenen Bildformaten mit unseren schnellen, kostenlosen und sicheren browserbasierten Tools. Verarbeiten Sie bis zu 50 Bilder gleichzeitig, ohne dass ein Upload erforderlich ist – die gesamte Konvertierung erfolgt direkt in Ihrem Browser.",
       toolsTitle: "Kostenlose {format} Bildkonvertierungs-Tools",
     },
     converter: {
       titleTemplate: "Konvertieren Sie {source} zu {target} kostenlos online 50 Bilder im Stapel - Convertify",
-      descriptionTemplate: "Konvertieren Sie {source}-Bilder kostenlos online in das {target}-Format. Verarbeiten Sie bis zu 50 Bilder gleichzeitig ohne Upload - die gesamte Konvertierung findet in Ihrem Browser statt für vollständige Privatsphäre.",
+      descriptionTemplate: "Konvertieren Sie {source}-Bilder kostenlos online in das {target}-Format. Verarbeiten Sie bis zu 50 Bilder gleichzeitig, ohne dass ein Upload erforderlich ist – die gesamte Konvertierung erfolgt in Ihrem Browser für vollständige Privatsphäre.",
       uploadText: "Laden Sie Ihre {source}-Bilder hoch und wir konvertieren sie in das {target}-Format mit höchster Qualität und kleinster Dateigröße. Verarbeiten Sie bis zu 50 Dateien gleichzeitig!",
     },
     about: {
@@ -585,7 +589,7 @@ const de: Translations = {
       },
       fileSize: {
         question: "Was ist die maximale Dateigröße, die ich konvertieren kann?",
-        answer: "Sie können Bilder bis zu 10 MB pro Datei konvertieren, mit einer Gesamtbatchgröße von bis zu 50 Bildern pro Konvertierung. Für größere Dateien müssen Sie diese möglicherweise zuerst komprimieren."
+        answer: "Sie können Bilder bis zu 10MB pro Datei konvertieren, mit einer Gesamtbatchgröße von bis zu 50 Bildern pro Konvertierung. Für größere Dateien müssen Sie diese möglicherweise zuerst komprimieren."
       },
       quality: {
         question: "Verliere ich Bildqualität während der Konvertierung?",
@@ -636,14 +640,14 @@ const it: Translations = {
       quickLinks: "Link rapidi",
       contact: "Contatto",
       contactText: "Hai domande o feedback? Ci piacerebbe sentire la tua opinione.",
-      copyright: "© {year} Convertify. Tutti i diritti riservati.",
+      copyright: "  {year} Convertify. Tutti i diritti riservati.",
       privacy: "Privacy",
       terms: "Termini",
     }
   },
   pages: {
     home: {
-      title: "Conversione gratuita di formati immagine online",
+      title: "Convertify - Strumenti Gratuiti di Conversione Formati Immagine Online | Conversione in Blocco di 50 Immagini",
       description: "Converti tra vari formati di immagine con i nostri strumenti veloci, gratuiti e sicuri basati sul browser. Elabora fino a 50 immagini alla volta senza necessità di caricamento - tutta la conversione avviene direttamente nel tuo browser.",
       toolsTitle: "Strumenti gratuiti di conversione immagini {format}",
     },
@@ -698,7 +702,7 @@ const it: Translations = {
         answer: "Puoi convertire immagini fino a 10MB ciascuna, con una dimensione totale del batch fino a 50 immagini per conversione. Per file più grandi, potrebbe essere necessario comprimerli prima."
       },
       quality: {
-        question: "Perderò qualità dell'immagine durante la conversione?",
+        question: "Voi perderò qualità dell'immagine durante la conversione?",
         answer: "Convertify si impegna a mantenere la massima qualità possibile durante la conversione. Tuttavia, alcuni cambiamenti di formato comportano intrinsecamente aggiustamenti della qualità. Ad esempio, la conversione da formati senza perdita (PNG) a formati con perdita (JPEG) comporterà una certa riduzione della qualità. Puoi regolare le impostazioni di qualità per molti formati."
       },
       browsers: {
@@ -746,20 +750,20 @@ const pt: Translations = {
       quickLinks: "Links rápidos",
       contact: "Contato",
       contactText: "Tem perguntas ou feedback? Adoraríamos ouvir você.",
-      copyright: "© {year} Convertify. Todos os direitos reservados.",
+      copyright: "  {year} Convertify. Todos os direitos reservados.",
       privacy: "Privacidade",
       terms: "Termos",
     }
   },
   pages: {
     home: {
-      title: "Conversão gratuita de formatos de imagem online",
-      description: "Converta entre vários formatos de imagem com nossas ferramentas rápidas, gratuitas e seguras baseadas no navegador. Processe até 50 imagens de uma vez sem necessidade de upload - toda a conversão acontece diretamente no seu navegador.",
+      title: "Convertify - Ferramentas Gratuitas de Conversão de Formatos de Imagem Online | Conversão em Lote de 50 Imagens",
+      description: "Converta entre vários formatos de imagem com nossas ferramentas rápidas, gratuitas e seguras baseadas no navegador. Processe até 50 imagens de uma vez sem necessidade de upload – toda a conversão acontece diretamente no seu navegador.",
       toolsTitle: "Ferramentas gratuitas de conversão de imagens {format}",
     },
     converter: {
-      titleTemplate: "Converter {source} para {target} gratuitamente online 50 imagens em lote - Convertify",
-      descriptionTemplate: "Converta imagens {source} para o formato {target} online gratuitamente. Processe até 50 imagens de uma vez sem necessidade de upload - toda a conversão acontece no seu navegador para total privacidade.",
+      titleTemplate: "Converter {source} para {target} gratuitamente online 50 imagens em batch - Convertify",
+      descriptionTemplate: "Converta imagens {source} para o formato {target} online gratuitamente. Processe até 50 imagens de uma vez sem necessidade de upload – toda a conversão acontece no seu navegador para total privacidade.",
       uploadText: "Carregue suas imagens {source} e nós as converteremos para o formato {target} com a melhor qualidade e menor tamanho de arquivo. Processe até 50 arquivos de uma vez!",
     },
     about: {
@@ -805,7 +809,7 @@ const pt: Translations = {
       },
       fileSize: {
         question: "Qual é o tamanho máximo de arquivo que posso converter?",
-        answer: "Você pode converter imagens de até 10MB cada, com um tamanho total de lote de até 50 imagens por conversão. Para arquivos maiores, você pode precisar comprimi-los primeiro."
+        answer: "Você pode converter imagens até 10MB cada, com um tamanho total de lote até 50 imagens por conversão. Para arquivos maiores, você pode precisar comprimi-los primeiro."
       },
       quality: {
         question: "Vou perder qualidade de imagem durante a conversão?",
@@ -856,7 +860,7 @@ const ru: Translations = {
       quickLinks: "Быстрые ссылки",
       contact: "Контакт",
       contactText: "Есть вопросы или отзывы? Мы будем рады услышать вас.",
-      copyright: "© {year} Convertify. Все права защищены.",
+      copyright: "  {year} Convertify. Все права защищены.",
       privacy: "Конфиденциальность",
       terms: "Условия",
     }
@@ -915,11 +919,11 @@ const ru: Translations = {
       },
       fileSize: {
         question: "Какой максимальный размер файла я могу конвертировать?",
-        answer: "Вы можете конвертировать изображения размером до 10 МБ каждое, с общим размером пакета до 50 изображений за одну конвертацию. Для больших файлов вам может потребоваться сначала их сжать."
+        answer: "Вы можете конвертировать изображения размером до 10 МБ каждое, с общим размером пакета до 50 изображений за одну конвертацию. Для более крупных файлов вам может потребоваться сначала их сжать."
       },
       quality: {
         question: "Потеряю ли я качество изображения при конвертации?",
-        answer: "Convertify стремится сохранить максимально возможное качество при конвертации. Однако некоторые изменения формата по своей природе включают корректировки качества. Например, конвертация из форматов без потерь (PNG) в форматы с потерями (JPEG) приведет к некоторому снижению качества. Вы можете настроить параметры качества для многих форматов."
+        answer: "Convertify стремится сохранить максимально возможное качество при конвертации. Однако, некоторые изменения формата по своей природе включают корректировки качества. Например, конвертация из форматов без потерь (PNG) в форматы с потерями (JPEG) приведет к некоторому снижению качества. Вы можете настроить параметры качества для многих форматов."
       },
       browsers: {
         question: "Какие браузеры поддерживаются?",
@@ -966,7 +970,7 @@ const zh: Translations = {
       quickLinks: "快速链接",
       contact: "联系",
       contactText: "有问题或反馈？我们很乐意听取您的意见。",
-      copyright: "© {year} Convertify。保留所有权利。",
+      copyright: "  {year} Convertify。保留所有权利。",
       privacy: "隐私",
       terms: "条款",
     }
@@ -975,12 +979,12 @@ const zh: Translations = {
     home: {
       title: "免费在线图片格式转换",
       description: "使用我们快速、免费、安全的基于浏览器的工具在各种图片格式之间转换。一次处理最多50张图片，无需上传 - 所有转换都在您的浏览器中进行。",
-      toolsTitle: "免费 {format} 图片转换工具",
+      toolsTitle: "免费{format}图片转换工具",
     },
     converter: {
-      titleTemplate: "在线免费将 {source} 转换为 {target} 50张图片批量转换 - Convertify",
-      descriptionTemplate: "在线免费将 {source} 图片转换为 {target} 格式。一次处理最多50张图片，无需上传 - 所有转换都在您的浏览器中进行，确保完全隐私。",
-      uploadText: "上传您的 {source} 图片，我们将以最高质量和最小文件大小将其转换为 {target} 格式。一次处理最多50个文件！",
+      titleTemplate: "{source}到{target}免费在线转换 50张图片批量转换 - Convertify",
+      descriptionTemplate: "{source}图片转换为{target}格式在线免费。一次处理最多50张图片，无需上传 - 所有转换都在您的浏览器中进行，确保完全隐私。",
+      uploadText: "{source}图片上传后，我们将其转换为{target}格式，确保最高质量和最小文件大小。一次处理最多50个文件！",
     },
     about: {
       title: "关于我们 | Convertify",
@@ -1000,7 +1004,7 @@ const zh: Translations = {
     },
     dataProtection: {
       title: "数据保护 | Convertify",
-      description: "了解 Convertify 如何保护您的数据。我们基于浏览器的图片转换工具在本地处理所有文件，确保您的图片永远不会离开您的设备。",
+      description: "了解 Convertify 如何保护您的数据。我们的基于浏览器的图片转换工具在本地处理所有文件，确保您的图片永远不会离开您的设备。",
     },
     notFound: {
       title: "页面未找到 | Convertify",
@@ -1066,9 +1070,9 @@ const ja: Translations = {
     download: "ダウンロード",
     original: "オリジナル",
     converted: "変換済み",
-    conversionStats: "{count}枚の画像を{time}秒で変換 • 平均サイズ削減: {reduction}",
-    imagesSelected: "{count}枚の画像が選択されました",
-    totalSize: "合計サイズ: {size} KB",
+    conversionStats: "変換した {count} 枚の画像、{time} 秒 • 平均サイズ削減：{reduction}",
+    imagesSelected: "選択した画像 {count} 枚",
+    totalSize: "合計サイズ：{size} KB",
     noReduction: "削減なし",
     footer: {
       aboutConvertify: "Convertifyについて",
@@ -1076,7 +1080,7 @@ const ja: Translations = {
       quickLinks: "クイックリンク",
       contact: "お問い合わせ",
       contactText: "ご質問やフィードバックがありますか？ぜひお聞かせください。",
-      copyright: "© {year} Convertify. All rights reserved.",
+      copyright: "  {year} Convertify。保留所有权利。",
       privacy: "プライバシー",
       terms: "利用規約",
     }
@@ -1127,7 +1131,7 @@ const ja: Translations = {
       },
       isFree: {
         question: "Convertifyは本当に無料ですか？",
-        answer: "はい、Convertifyは隠れた料金やサブスクリプションなしで完全に無料です。変換回数を制限したり、画像に透かしを追加したりすることはありません。"
+        answer: "はい、Convertifyは完全に無料です。隠れた料金やサブスクリプションはありません。変換回数を制限したり、画像に透かしを追加したりすることはありません。"
       },
       privacy: {
         question: "私の画像はサーバーにアップロードされますか？",
@@ -1177,16 +1181,16 @@ const ar: Translations = {
     original: "الأصلي",
     converted: "المحول",
     conversionStats: "تم تحويل {count} {count, plural, zero {صورة} one {صورة} two {صورتين} few {صور} many {صورة} other {صورة}} في {time} ثوانٍ • متوسط تقليل الحجم: {reduction}",
-    imagesSelected: "تم اختيار {count} {count, plural, zero {صورة} one {صورة} two {صورتين} few {صور} many {صورة} other {صورة}}",
+    imagesSelected: "{count} {count, plural, zero {صورة} one {صورة} two {صورتين} few {صور} many {صورة} other {صورة}}",
     totalSize: "الحجم الإجمالي: {size} كيلوبايت",
-    noReduction: "لا يوجد تخفيض",
+    noReduction: "لا يوجد تقليل",
     footer: {
       aboutConvertify: "عن Convertify",
       popularConversions: "التحويلات الشائعة",
       quickLinks: "روابط سريعة",
       contact: "اتصال",
       contactText: "هل لديك أسئلة أو تعليقات؟ نود أن نسمع منك.",
-      copyright: "© {year} Convertify. جميع الحقوق محفوظة.",
+      copyright: "  {year} Convertify. جميع الحقوق محفوظة.",
       privacy: "الخصوصية",
       terms: "الشروط",
     }
@@ -1220,7 +1224,7 @@ const ar: Translations = {
     },
     dataProtection: {
       title: "حماية البيانات | Convertify",
-      description: "تعرف على كيفية حماية Convertify لبياناتك. تقوم أداة تحويل الصور المستندة إلى المتصفح بمعالجة جميع الملفات محلياً، مما يضمن عدم مغادرة صورك لجهازك أبداً.",
+      description: "تعرف على كيفية حماية Convertify لبياناتك. تقوم أداة تحويل الصور المستندة إلى المتصفح بمعالجة جميع الملفات محلياً، مما يضمن أن صورك لا تغادر جهازك أبداً.",
     },
     notFound: {
       title: "الصفحة غير موجودة | Convertify",
@@ -1233,7 +1237,7 @@ const ar: Translations = {
     questions: {
       howMany: {
         question: "كم عدد الصور التي يمكنني تحويلها في المرة الواحدة؟",
-        answer: "يتيح لك Convertify تحويل ما يصل إلى 50 صورة في وقت واحد. ما عليك سوى سحب وإفلات ملفاتك أو تحديدها من جهازك، وستقوم أداتنا بمعالجتها جميعًا دفعة واحدة، مما يوفر لك الوقت والجهد."
+        answer: "يتيح لك Convertify تحويل ما يصل إلى 50 صورة في وقت واحد. ما عليك سوى سحب وإفلات ملفاتك أو تحديدها من جهازك، وستقوم أداتنا بمعالجتها جميعاً دفعة واحدة، مما يوفر لك الوقت والجهد."
       },
       isFree: {
         question: "هل Convertify مجاني حقًا؟",
@@ -1245,11 +1249,11 @@ const ar: Translations = {
       },
       fileSize: {
         question: "ما هو الحد الأقصى لحجم الملف الذي يمكنني تحويله؟",
-        answer: "يمكنك تحويل صور يصل حجمها إلى 10 ميجابايت لكل منها، بحجم إجمالي للدفعة يصل إلى 50 صورة لكل تحويل. بالنسبة للملفات الأكبر، قد تحتاج إلى ضغطها أولاً."
+        answer: "يمكنك تحويل صور يصل حجمها إلى 10MB لكل منها، بحجم إجمالي للدفعة يصل إلى 50 صورة لكل تحويل.对于较大的文件，您可能需要先压缩它们。"
       },
       quality: {
-        question: "هل سأفقد جودة الصورة أثناء التحويل؟",
-        answer: "يسعى Convertify للحفاظ على أعلى جودة ممكنة أثناء التحويل. ومع ذلك، تتضمن بعض تغييرات التنسيق بطبيعتها تعديلات في الجودة. على سبيل المثال، سيؤدي التحويل من تنسيقات بدون فقدان (PNG) إلى تنسيقات مع فقدان (JPEG) إلى بعض انخفاض الجودة. يمكنك ضبط إعدادات الجودة للعديد من التنسيقات."
+        question: "هل سأفقد جودة الصورة خلال التحويل؟",
+        answer: "يسعى Convertify للحفاظ على أعلى جودة ممكنة خلال التحويل. ومع ذلك، تتضمن بعض تغييرات التنسيق بطبيعتها تعديلات في الجودة. على سبيل المثال، سيؤدي التحويل من تنسيقات بدون فقدان (PNG) إلى تنسيقات مع فقدان (JPEG) إلى بعض انخفاض الجودة. يمكنك ضبط إعدادات الجودة للعديد من التنسيقات."
       },
       browsers: {
         question: "ما هي المتصفحات المدعومة؟",
