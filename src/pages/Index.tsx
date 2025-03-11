@@ -13,11 +13,14 @@ import { cn } from "@/lib/utils";
 import { SlugViewer } from "@/components/DevTools/SlugViewer";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { FormatGallery } from "@/components/FormatGallery";
-import { ScrollToTopLink } from "@/components/ScrollToTopLink";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Index = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { languagePath, currentLanguage } = useLanguage();
+  const { t } = useTranslation();
   
   // Group formats for the homepage
   const formatGroups = [
@@ -33,9 +36,9 @@ const Index = () => {
   useEffect(() => {
     if (slug && !slugToFormat(slug)) {
       // If invalid slug, redirect to default
-      navigate("/png-jpeg", { replace: true });
+      navigate(languagePath("/png-jpeg"), { replace: true });
     }
-  }, [slug, navigate]);
+  }, [slug, navigate, languagePath]);
   
   // Set page metadata based on current conversion formats
   useEffect(() => {
@@ -43,7 +46,10 @@ const Index = () => {
       const formats = slugToFormat(slug);
       if (formats) {
         // Set page title with new format
-        const pageTitle = `Convert ${formats.source.toUpperCase()} To ${formats.target.toUpperCase()} Free Online 50 Images Bulk In-Time - Convertify`;
+        const pageTitle = t('pages.converter.titleTemplate', {
+          source: formats.source.toUpperCase(),
+          target: formats.target.toUpperCase()
+        });
         document.title = pageTitle;
         
         // Set meta description for SEO with enhanced CTR
@@ -54,7 +60,10 @@ const Index = () => {
           document.head.appendChild(metaDescription);
         }
         metaDescription.setAttribute('content', 
-          `Convert ${formats.source.toUpperCase()} to ${formats.target.toUpperCase()} format online for free. Process up to 50 images at once with no upload required - all conversion happens in your browser for complete privacy. Fast, secure, and high quality.`
+          t('pages.converter.descriptionTemplate', {
+            source: formats.source.toUpperCase(),
+            target: formats.target.toUpperCase()
+          })
         );
         
         // Set canonical link
@@ -64,7 +73,7 @@ const Index = () => {
           canonicalLink.setAttribute('rel', 'canonical');
           document.head.appendChild(canonicalLink);
         }
-        canonicalLink.setAttribute('href', `https://convertify.click/${slug}`);
+        canonicalLink.setAttribute('href', `https://convertify.click${languagePath(`/${slug}`)}`);
         
         // Add schema.org structured data for SEO
         let structuredData = document.querySelector('#structured-data');
@@ -79,7 +88,7 @@ const Index = () => {
           "@context": "https://schema.org",
           "@type": "WebApplication",
           "name": `Convert ${formats.source.toUpperCase()} To ${formats.target.toUpperCase()} Free Online 50 Images Bulk In-Time`,
-          "url": `https://convertify.click/${slug}`,
+          "url": `https://convertify.click${languagePath(`/${slug}`)}`,
           "description": `Free online tool to convert ${formats.source.toUpperCase()} images to ${formats.target.toUpperCase()} format. Process up to 50 images at once with high quality and privacy.`,
           "applicationCategory": "MultimediaApplication",
           "operatingSystem": "Any",
@@ -102,9 +111,7 @@ const Index = () => {
         metaDescription.setAttribute('name', 'description');
         document.head.appendChild(metaDescription);
       }
-      metaDescription.setAttribute('content', 
-        "Free online image format conversion tools. Convert between PNG, JPEG, WebP, AVIF, GIF, SVG and more. Process up to 50 images at once with no upload required - all processing happens right in your browser for complete privacy."
-      );
+      metaDescription.setAttribute('content', t('pages.home.description'));
       
       let canonicalLink = document.querySelector('link[rel="canonical"]');
       if (!canonicalLink) {
@@ -112,9 +119,9 @@ const Index = () => {
         canonicalLink.setAttribute('rel', 'canonical');
         document.head.appendChild(canonicalLink);
       }
-      canonicalLink.setAttribute('href', "https://convertify.click");
+      canonicalLink.setAttribute('href', `https://convertify.click${languagePath('/')}`);
     }
-  }, [slug]);
+  }, [slug, languagePath, t, currentLanguage]);
   
   // Helper function to generate target formats for a source format
   const getTargetFormats = (sourceFormat: ImageFormat): ImageFormat[] => {
@@ -153,7 +160,7 @@ const Index = () => {
           <section className="py-12 bg-muted/30">
             <div className="container mx-auto px-4">
               <h2 className="text-2xl font-bold mb-6 text-center">
-                All Available Conversion Formats
+                {t('common.allFormats')}
               </h2>
               <FormatGallery />
             </div>
@@ -171,11 +178,10 @@ const Index = () => {
       <main className="flex-1 container mx-auto px-4 py-8">
         <section className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Free Online Image Format Conversion
+            {t('pages.home.title')}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Convert between various image formats with our fast, free, and secure browser-based tools.
-            Process up to 50 images at once with no upload required - all conversion happens right in your browser.
+            {t('pages.home.description')}
           </p>
         </section>
         
@@ -183,7 +189,7 @@ const Index = () => {
         {formatGroups.map((group) => (
           <section className="mb-12" key={group.format}>
             <h2 className="text-2xl font-bold mb-6 border-b pb-2">
-              Free {group.title} Image Conversion Tools
+              {t('pages.home.toolsTitle', { format: group.title })}
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -192,7 +198,7 @@ const Index = () => {
                 return (
                   <Link
                     key={targetFormat}
-                    to={`/${conversionSlug}`}
+                    to={languagePath(`/${conversionSlug}`)}
                     className="no-underline text-foreground"
                     onClick={handleLinkClick}
                   >
@@ -206,7 +212,7 @@ const Index = () => {
                         <span>{targetFormat.toUpperCase()}</span>
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Convert {group.format.toUpperCase()} to {targetFormat.toUpperCase()} format
+                        {t('common.convert')} {group.format.toUpperCase()} {t('common.to')} {targetFormat.toUpperCase()} {t('common.format')}
                       </p>
                     </Card>
                   </Link>
@@ -219,7 +225,7 @@ const Index = () => {
         {/* FAQ Section for homepage */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6 border-b pb-2">
-            Frequently Asked Questions
+            {t('faq.title')}
           </h2>
           <div className="max-w-3xl mx-auto">
             <FAQSection />

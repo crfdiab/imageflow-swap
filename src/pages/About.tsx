@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const About = () => {
+  const { languagePath } = useLanguage();
+  const { t } = useTranslation();
+  
   // Set page metadata
   useEffect(() => {
-    document.title = "About Us | Convertify";
+    document.title = t('pages.about.title');
     
     // Set meta description
     let metaDescription = document.querySelector('meta[name="description"]');
@@ -14,9 +19,7 @@ const About = () => {
       metaDescription.setAttribute('name', 'description');
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', 
-      "Learn about Convertify, the free online image conversion tool that lets you convert up to 50 images at once with complete privacy and security."
-    );
+    metaDescription.setAttribute('content', t('pages.about.description'));
     
     // Set canonical link
     let canonicalLink = document.querySelector('link[rel="canonical"]');
@@ -25,57 +28,65 @@ const About = () => {
       canonicalLink.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', "https://convertify.click/about");
-  }, []);
-
+    canonicalLink.setAttribute('href', `https://convertify.click${languagePath('/about')}`);
+  }, [languagePath, t]);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">About Us</h1>
-        
-        {/* About content */}
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="text-lg mb-4">
-            Convertify is a free online tool that allows you to convert images between various formats without uploading your files to any server. All processing happens right in your browser, ensuring complete privacy and security.
-          </p>
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">
+            {t('common.aboutUs')}
+          </h1>
           
-          <h2 className="text-2xl font-bold mt-8 mb-4">Our Mission</h2>
-          <p>
-            Our mission is to provide a simple, fast, and secure way to convert images between different formats. We believe that essential tools like image conversion should be accessible to everyone without compromising privacy or requiring expensive software.
-          </p>
-          
-          <h2 className="text-2xl font-bold mt-8 mb-4">How It Works</h2>
-          <p>
-            Convertify uses modern web technologies to process your images directly in your browser. When you upload an image, it never leaves your device - all conversion happens locally using your computer's resources. This approach offers several benefits:
-          </p>
-          <ul className="list-disc pl-6 my-4">
-            <li>Complete privacy - your files never leave your device</li>
-            <li>Fast processing - no waiting for uploads or downloads</li>
-            <li>Batch processing - convert up to 50 images at once</li>
-            <li>No registration required - just visit and start converting</li>
-            <li>Works offline - once loaded, you can use it without internet</li>
-          </ul>
-          
-          <h2 className="text-2xl font-bold mt-8 mb-4">Supported Formats</h2>
-          <p>
-            Convertify supports conversion between all major image formats, including:
-          </p>
-          <ul className="list-disc pl-6 my-4">
-            <li>PNG - Portable Network Graphics (lossless)</li>
-            <li>JPEG - Joint Photographic Experts Group (lossy)</li>
-            <li>WebP - Modern format with superior compression</li>
-            <li>AVIF - AV1 Image File Format (excellent compression)</li>
-            <li>GIF - Graphics Interchange Format</li>
-            <li>SVG - Scalable Vector Graphics</li>
-            <li>BMP - Bitmap image file</li>
-            <li>ICO - Icon file format</li>
-          </ul>
-          
-          <h2 className="text-2xl font-bold mt-8 mb-4">Contact Us</h2>
-          <p>
-            Have questions, suggestions, or feedback? We'd love to hear from you! Visit our <a href="/contact" className="text-primary hover:underline">Contact page</a> to get in touch.
-          </p>
+          <div className="prose dark:prose-invert max-w-none">
+            <p className="lead">
+              Convertify is a free online tool that allows you to convert images between different formats directly in your browser. No uploads required, ensuring complete privacy and security.
+            </p>
+            
+            <h2>Our Mission</h2>
+            <p>
+              Our mission is to provide a simple, fast, and secure way to convert images between different formats without requiring any software installation or uploading files to external servers. We believe in making image conversion accessible to everyone, regardless of technical expertise.
+            </p>
+            
+            <h2>How Convertify Works</h2>
+            <p>
+              Convertify uses modern web technologies to process your images directly in your browser. This means:
+            </p>
+            <ul>
+              <li>Your files never leave your device</li>
+              <li>Conversions happen instantly</li>
+              <li>No registration or account required</li>
+              <li>No software to install</li>
+              <li>Works on any device with a modern browser</li>
+            </ul>
+            
+            <h2>Privacy First</h2>
+            <p>
+              We take your privacy seriously. Since all processing happens locally in your browser, your images are never uploaded to our servers. This ensures complete privacy and security for your sensitive or personal images.
+            </p>
+            
+            <h2>Supported Formats</h2>
+            <p>
+              Convertify supports conversion between all major image formats, including:
+            </p>
+            <ul>
+              <li>PNG</li>
+              <li>JPEG/JPG</li>
+              <li>WebP</li>
+              <li>AVIF</li>
+              <li>GIF</li>
+              <li>SVG</li>
+              <li>BMP</li>
+              <li>ICO</li>
+            </ul>
+            
+            <h2>Contact Us</h2>
+            <p>
+              Have questions, feedback, or suggestions? We'd love to hear from you! Visit our <a href={languagePath('/contact')} className="text-primary hover:underline">Contact page</a> to get in touch.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

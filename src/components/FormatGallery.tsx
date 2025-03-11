@@ -1,38 +1,52 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { IMAGE_FORMATS, formatToSlug, ImageFormat } from '@/utils/formatUtils';
-import { ArrowRight, Search, X } from 'lucide-react';
+import { useState, useMemo } from "react";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { IMAGE_FORMATS, formatToSlug, ImageFormat } from "@/utils/formatUtils";
+import { useLanguage } from "./LanguageProvider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function FormatGallery() {
-  const [filter, setFilter] = useState('');
-  const [activeTab, setActiveTab] = useState<ImageFormat | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const { languagePath } = useLanguage();
+  const { t } = useTranslation();
   
-  // Generate all format combinations
-  const allCombinations = IMAGE_FORMATS.flatMap(source => 
-    IMAGE_FORMATS.filter(target => source !== target).map(target => ({
-      source,
-      target,
-      slug: formatToSlug(source, target)
-    }))
-  );
+  // Generate all possible format combinations
+  const allCombinations = useMemo(() => {
+    const combinations: { source: ImageFormat; target: ImageFormat; slug: string }[] = [];
+    
+    IMAGE_FORMATS.forEach(source => {
+      IMAGE_FORMATS.forEach(target => {
+        if (source !== target) {
+          // Filter out jpg when jpeg is present to avoid duplicates
+          if (!(source === 'jpg' && target === 'jpeg') && 
+              !(source === 'jpeg' && target === 'jpg')) {
+            combinations.push({
+              source: source as ImageFormat,
+              target: target as ImageFormat,
+              slug: formatToSlug(source as ImageFormat, target as ImageFormat)
+            });
+          }
+        }
+      });
+    });
+    
+    return combinations;
+  }, []);
   
-  // Filter combinations based on search and active tab
-  const filteredCombinations = allCombinations.filter(combo => {
-    const matchesFilter = filter === '' || 
-      combo.source.toLowerCase().includes(filter.toLowerCase()) ||
-      combo.target.toLowerCase().includes(filter.toLowerCase()) ||
-      `${combo.source} to ${combo.target}`.toLowerCase().includes(filter.toLowerCase());
+  // Filter combinations based on search query
+  const filteredCombinations = useMemo(() => {
+    if (!searchQuery.trim()) return allCombinations;
     
-    const matchesTab = activeTab === 'all' || 
-      combo.source === activeTab || 
-      combo.target === activeTab;
-    
-    return matchesFilter && matchesTab;
-  });
+    const query = searchQuery.toLowerCase();
+    return allCombinations.filter(combo => 
+      combo.source.toLowerCase().includes(query) || 
+      combo.target.toLowerCase().includes(query) ||
+      `${combo.source} to ${combo.target}`.toLowerCase().includes(query)
+    );
+  }, [allCombinations, searchQuery]);
   
   // Function to scroll to top when link is clicked
   const handleLinkClick = () => {
@@ -44,62 +58,43 @@ export function FormatGallery() {
   
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground opacity-70" />
-          <Input
-            placeholder="Search formats..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="pl-9 pr-9"
-          />
-          {filter && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7"
-              onClick={() => setFilter('')}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+      <div className="max-w-md mx-auto">
+        <Input
+          type="search"
+          placeholder={t('common.searchFormats')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full"
+        />
       </div>
       
-      <Tabs defaultValue="all" value={activeTab} onValueChange={(value) => setActiveTab(value as ImageFormat | 'all')}>
-        <TabsList className="flex flex-wrap h-auto mb-4">
-          <TabsTrigger value="all">All</TabsTrigger>
-          {IMAGE_FORMATS.map(format => (
-            <TabsTrigger key={format} value={format}>
-              {format.toUpperCase()}
-            </TabsTrigger>
+      {filteredCombinations.length === 0 ? (
+        <p className="text-center text-muted-foreground py-8">
+          {t('common.noResults')}
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {filteredCombinations.map(({ source, target, slug }) => (
+            <Link
+              key={slug}
+              to={languagePath(`/${slug}`)}
+              className="no-underline text-foreground"
+              onClick={handleLinkClick}
+            >
+              <Card className={cn(
+                "p-3 flex flex-col items-center justify-center text-center h-full transition-all duration-300",
+                "hover:shadow-md hover:-translate-y-1"
+              )}>
+                <div className="flex items-center gap-1 text-sm font-medium">
+                  <span>{source.toUpperCase()}</span>
+                  <ArrowRight size={14} className="text-primary" />
+                  <span>{target.toUpperCase()}</span>
+                </div>
+              </Card>
+            </Link>
           ))}
-        </TabsList>
-        
-        <TabsContent value={activeTab} className="mt-0">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filteredCombinations.map(({ source, target, slug }) => (
-              <Link key={slug} to={`/${slug}`} onClick={handleLinkClick}>
-                <Card className="overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-center space-x-2">
-                      <span className="font-medium text-sm uppercase text-foreground">{source}</span>
-                      <ArrowRight className="h-4 w-4 text-foreground opacity-70" />
-                      <span className="font-medium text-sm uppercase text-foreground">{target}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-          
-          {filteredCombinations.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No conversion formats match your search.</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   );
 } 

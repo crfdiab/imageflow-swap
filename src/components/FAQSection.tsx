@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import {
   Accordion,
@@ -7,10 +6,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { slugToFormat } from "@/utils/formatUtils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function FAQSection() {
   const { slug } = useParams<{ slug: string }>();
   const formats = slug ? slugToFormat(slug) : null;
+  const { t } = useTranslation();
   
   // Format-specific FAQs based on current conversion
   const formatFAQs = formats ? [
@@ -57,26 +58,32 @@ export function FAQSection() {
   ];
   
   return (
-    <section className="w-full max-w-4xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-      
-      <Accordion type="single" collapsible className="w-full">
-        {/* Format specific FAQs */}
-        {formatFAQs.map((faq, index) => (
-          <AccordionItem key={`format-${index}`} value={`format-${index}`}>
-            <AccordionTrigger className="text-left font-medium">{faq.question}</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
+    <section className="py-12 bg-muted/30">
+      <div className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          {t('faq.title')}
+        </h2>
         
-        {/* General FAQs */}
-        {generalFAQs.map((faq, index) => (
-          <AccordionItem key={`general-${index}`} value={`general-${index}`}>
-            <AccordionTrigger className="text-left font-medium">{faq.question}</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+        <div className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="w-full">
+            {/* Format specific FAQs */}
+            {formatFAQs.map((faq, index) => (
+              <AccordionItem key={`format-${index}`} value={`format-${index}`}>
+                <AccordionTrigger className="text-left font-medium">{faq.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+            
+            {/* General FAQs */}
+            {generalFAQs.map((faq, index) => (
+              <AccordionItem key={`general-${index}`} value={`general-${index}`}>
+                <AccordionTrigger className="text-left font-medium">{faq.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
     </section>
   );
 }

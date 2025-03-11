@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Upload, Download, File, ImageIcon, RefreshCw, X, FileImage } from "lucide-react";
+import { Upload, Download, File, ImageIcon, RefreshCw, X, FileImage, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -8,18 +8,43 @@ import { detectImageFormat, convertImage } from "@/utils/imageUtils";
 import { formatToSlug, ImageFormat, normalizeFormat, slugToFormat } from "@/utils/formatUtils";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+
+// Import conversion functions
+import { convertPngToJpeg, convertJpegToPng } from "@/utils/converters/pngJpegConverter";
+import { convertToWebp, convertFromWebp } from "@/utils/converters/webpConverter";
+import { convertToAvif, convertFromAvif } from "@/utils/converters/avifConverter";
+import { convertToGif, convertFromGif } from "@/utils/converters/gifConverter";
+import { convertToSvg, convertFromSvg } from "@/utils/converters/svgConverter";
+import { convertToBmp, convertFromBmp } from "@/utils/converters/bmpConverter";
+import { convertToIco, convertFromIco } from "@/utils/converters/icoConverter";
+
+// Define the structure for a conversion result
+interface ConversionResult {
+  id: string;
+  originalFile: File;
+  convertedBlob: Blob | null;
+  convertedUrl: string;
+  status: 'waiting' | 'converting' | 'completed' | 'failed';
+  originalSize: number;
+  convertedSize: number | null;
+}
 
 export function ConversionArea() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [formats, setFormats] = useState<{ source: ImageFormat; target: ImageFormat } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [convertedImages, setConvertedImages] = useState<{ file: File; url: string; blob: Blob }[]>([]);
+  const [files, setFiles] = useState<ConversionResult[]>([]);
   const [isConverting, setIsConverting] = useState(false);
-  const [conversionProgress, setConversionProgress] = useState(0);
-  const [conversionTime, setConversionTime] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [conversionStats, setConversionStats] = useState<{
+    time: number;
+    count: number;
+    sizeReduction: number;
+  } | null>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -113,9 +138,9 @@ export function ConversionArea() {
   // Common file handling logic for multiple files
   const handleImageFiles = async (files: File[]) => {
     // Reset states
-    setConversionProgress(0);
-    setConversionTime(null);
-    setConvertedImages([]);
+    setProgress(0);
+    setConversionStats(null);
+    setFiles([]);
     
     // If formats aren't loaded yet, wait
     if (!formats) return;
@@ -145,72 +170,149 @@ export function ConversionArea() {
       
       navigate(`/${newSlug}`, { replace: true });
       return;
-      }
+    }
     }
     
-    setUploadedFiles(files);
+    // Create new files with waiting status
+    const newFiles: ConversionResult[] = files.map(file => ({
+      id: Math.random().toString(36).substring(2, 9),
+      originalFile: file,
+      convertedBlob: null,
+      convertedUrl: '',
+      status: 'waiting',
+      originalSize: file.size,
+      convertedSize: null
+    }));
+    
+    setFiles(prevFiles => [...prevFiles, ...newFiles]);
     
     // Auto-convert immediately after upload
-    await convertImageFiles(files, formats.target);
+    await convertFiles();
   };
   
-  // Convert multiple images to the target format
-  const convertImageFiles = async (files: File[], targetFormat: ImageFormat) => {
+  // Function to convert files
+  const convertFiles = useCallback(async () => {
+    if (!formats || files.length === 0 || isConverting) return;
+    
     setIsConverting(true);
-    setConvertedImages([]);
+    setProgress(0);
     
     const startTime = performance.now();
-    const results: { file: File; url: string; blob: Blob }[] = [];
+    let totalProcessed = 0;
+    let totalSizeReduction = 0;
     
-    try {
-      // Process each file sequentially
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        
-        // Update progress based on file index
-        const fileProgress = (i / files.length) * 100;
-        setConversionProgress(fileProgress);
-        
-        // Convert the current file
-      const result = await convertImage(file, targetFormat);
-        
-        if (result) {
-          results.push({ file, ...result });
-        }
+    // Create a copy of files to update
+    const updatedFiles = [...files];
+    
+    for (let i = 0; i < updatedFiles.length; i++) {
+      const file = updatedFiles[i];
+      
+      // Skip already converted files
+      if (file.status === 'completed') {
+        continue;
       }
       
-      setConversionProgress(100);
-      setConvertedImages(results);
+      // Update status to converting
+      file.status = 'converting';
+      setFiles([...updatedFiles]);
       
-        const endTime = performance.now();
-        const timeTaken = Math.round((endTime - startTime) / 10) / 100; // Convert to seconds with 2 decimal places
-        setConversionTime(timeTaken);
+      try {
+        // Choose the appropriate conversion function based on formats
+        let convertedBlob: Blob | null = null;
         
-        toast({
-          title: "Conversion Successful",
-        description: `${results.length} ${results.length === 1 ? 'image' : 'images'} converted to ${targetFormat.toUpperCase()} format in ${timeTaken}s`,
-        });
-    } catch (error) {
-      toast({
-        title: "Conversion failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive"
-      });
-    } finally {
-      setIsConverting(false);
+        const { source, target } = formats;
+        
+        if (source === 'png' && target === 'jpeg') {
+          convertedBlob = await convertPngToJpeg(file.originalFile);
+        } else if (source === 'jpeg' && target === 'png') {
+          convertedBlob = await convertJpegToPng(file.originalFile);
+        } else if (target === 'webp') {
+          convertedBlob = await convertToWebp(file.originalFile);
+        } else if (source === 'webp') {
+          convertedBlob = await convertFromWebp(file.originalFile, target);
+        } else if (target === 'avif') {
+          convertedBlob = await convertToAvif(file.originalFile);
+        } else if (source === 'avif') {
+          convertedBlob = await convertFromAvif(file.originalFile, target);
+        } else if (target === 'gif') {
+          convertedBlob = await convertToGif(file.originalFile);
+        } else if (source === 'gif') {
+          convertedBlob = await convertFromGif(file.originalFile, target);
+        } else if (target === 'svg') {
+          convertedBlob = await convertToSvg(file.originalFile);
+        } else if (source === 'svg') {
+          convertedBlob = await convertFromSvg(file.originalFile, target);
+        } else if (target === 'bmp') {
+          convertedBlob = await convertToBmp(file.originalFile);
+        } else if (source === 'bmp') {
+          convertedBlob = await convertFromBmp(file.originalFile, target);
+        } else if (target === 'ico') {
+          convertedBlob = await convertToIco(file.originalFile);
+        } else if (source === 'ico') {
+          convertedBlob = await convertFromIco(file.originalFile, target);
+        }
+        
+        if (convertedBlob) {
+          // Create object URL for the converted blob
+          const convertedUrl = URL.createObjectURL(convertedBlob);
+          
+          // Update file with conversion result
+          file.convertedBlob = convertedBlob;
+          file.convertedUrl = convertedUrl;
+          file.status = 'completed';
+          file.convertedSize = convertedBlob.size;
+          
+          // Calculate size reduction
+          const sizeReduction = file.originalSize - convertedBlob.size;
+          totalSizeReduction += sizeReduction;
+        } else {
+          file.status = 'failed';
+        }
+      } catch (error) {
+        console.error('Conversion error:', error);
+        file.status = 'failed';
+      }
+      
+      totalProcessed++;
+      setProgress(Math.round((totalProcessed / updatedFiles.length) * 100));
+      setFiles([...updatedFiles]);
     }
-  };
+    
+    const endTime = performance.now();
+    const conversionTime = ((endTime - startTime) / 1000).toFixed(2);
+    
+    // Calculate average size reduction percentage
+    const successfulConversions = updatedFiles.filter(file => file.status === 'completed');
+    const averageSizeReduction = successfulConversions.length > 0 
+      ? Math.round((totalSizeReduction / totalProcessed) / 1024) // KB
+      : 0;
+    
+    setConversionStats({
+      time: parseFloat(conversionTime),
+      count: totalProcessed,
+      sizeReduction: averageSizeReduction
+    });
+    
+    setIsConverting(false);
+  }, [formats, files, isConverting]);
+  
+  // Auto-convert files when they are added
+  useEffect(() => {
+    if (files.length > 0 && !isConverting && files.some(file => file.status === 'waiting')) {
+      convertFiles();
+    }
+  }, [files, isConverting, convertFiles]);
   
   // Download all converted images as a zip file
   const handleDownloadAll = async () => {
-    if (!convertedImages.length || !formats) return;
+    if (!files.length || !formats) return;
     
     // If only one image, download it directly
-    if (convertedImages.length === 1) {
-      const { url, file } = convertedImages[0];
+    if (files.length === 1) {
+      const { convertedUrl, originalFile } = files[0];
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `${file.name.split('.')[0]}.${formats.target}`;
+      link.href = convertedUrl;
+      link.download = `${originalFile.name.split('.')[0]}.${formats.target}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -229,9 +331,9 @@ export function ConversionArea() {
       const zip = new JSZip();
       
       // Add each image to the zip
-      convertedImages.forEach(({ blob, file }, index) => {
-        const fileName = `${file.name.split('.')[0]}.${formats.target}`;
-        zip.file(fileName, blob);
+      files.forEach(({ convertedBlob, originalFile }, index) => {
+        const fileName = `${originalFile.name.split('.')[0]}.${formats.target}`;
+        zip.file(fileName, convertedBlob);
       });
       
       // Generate the zip file
@@ -245,11 +347,11 @@ export function ConversionArea() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
-      
-      toast({
+        
+        toast({
         title: "Download started",
-        description: `Your ${convertedImages.length} converted images are being downloaded as a zip file`,
-      });
+        description: `Your ${files.length} converted images are being downloaded as a zip file`,
+        });
     } catch (error) {
       console.error('Error creating zip file:', error);
       toast({
@@ -259,10 +361,10 @@ export function ConversionArea() {
       });
       
       // Fallback: download images individually
-      convertedImages.forEach(({ url, file }) => {
+      files.forEach(({ convertedUrl, originalFile }) => {
         const link = document.createElement('a');
-        link.href = url;
-        link.download = `${file.name.split('.')[0]}.${formats?.target}`;
+        link.href = convertedUrl;
+        link.download = `${originalFile.name.split('.')[0]}.${formats?.target}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -272,12 +374,12 @@ export function ConversionArea() {
   
   // Download a single converted image
   const handleDownloadSingle = (index: number) => {
-    if (!convertedImages[index] || !formats) return;
+    if (!files[index] || !formats) return;
     
-    const { url, file } = convertedImages[index];
+    const { convertedUrl, originalFile } = files[index];
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `${file.name.split('.')[0]}.${formats.target}`;
+    link.href = convertedUrl;
+    link.download = `${originalFile.name.split('.')[0]}.${formats.target}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -291,18 +393,13 @@ export function ConversionArea() {
   // Clear the current images and reset state
   const handleReset = () => {
     // Revoke object URLs to prevent memory leaks
-    uploadedFiles.forEach(file => {
-      URL.revokeObjectURL(URL.createObjectURL(file));
+    files.forEach(file => {
+      if (file.convertedUrl) {
+        URL.revokeObjectURL(file.convertedUrl);
+      }
     });
-    
-    convertedImages.forEach(({ url }) => {
-      URL.revokeObjectURL(url);
-    });
-    
-    setUploadedFiles([]);
-    setConvertedImages([]);
-    setConversionProgress(0);
-    setConversionTime(null);
+    setFiles([]);
+    setConversionStats(null);
     
     // Clear file input
     if (fileInputRef.current) {
@@ -311,23 +408,8 @@ export function ConversionArea() {
   };
   
   // Remove a single file from the batch
-  const handleRemoveFile = (index: number) => {
-    const newFiles = [...uploadedFiles];
-    newFiles.splice(index, 1);
-    setUploadedFiles(newFiles);
-    
-    // Also remove the corresponding converted image if it exists
-    if (convertedImages[index]) {
-      const newConvertedImages = [...convertedImages];
-      URL.revokeObjectURL(newConvertedImages[index].url);
-      newConvertedImages.splice(index, 1);
-      setConvertedImages(newConvertedImages);
-    }
-    
-    // If all files are removed, reset the component
-    if (newFiles.length === 0) {
-      handleReset();
-    }
+  const handleRemoveFile = (id: string) => {
+    setFiles(prevFiles => prevFiles.filter(file => file.id !== id));
   };
   
   // Drag event handlers
@@ -358,32 +440,37 @@ export function ConversionArea() {
   
   // Calculate total size reduction
   const calculateSizeReduction = () => {
-    if (!uploadedFiles.length || !convertedImages.length) return '0%';
+    if (!files.length || !files.some(file => file.status === 'completed')) return '0%';
     
-    const originalSize = uploadedFiles.reduce((sum, file) => sum + file.size, 0);
-    const convertedSize = convertedImages.reduce((sum, { blob }) => sum + blob.size, 0);
+    const originalSize = files.reduce((sum, file) => sum + file.originalSize, 0);
+    const convertedSize = files.reduce((sum, file) => sum + (file.status === 'completed' ? file.convertedSize : 0), 0);
     
     return (100 - (convertedSize / originalSize * 100)).toFixed(1) + '%';
   };
   
-  // Show placeholder or conversion UI based on upload state
+  // If no formats, don't render
+  if (!formats) return null;
+  
+  const { source, target } = formats;
+  const hasCompletedFiles = files.some(file => file.status === 'completed');
+  const allFilesCompleted = files.length > 0 && files.every(file => file.status === 'completed' || file.status === 'failed');
+  
   return (
     <div className="w-full max-w-4xl mx-auto px-4 pt-8 pb-4 animate-fade-in">
       {/* Conversion title and description */}
       {formats && (
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
-            Convert {formats.source.toUpperCase()} to {formats.target.toUpperCase()}
+            {t('common.convert')} {source.toUpperCase()} {t('common.to')} {target.toUpperCase()}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Upload your {formats.source.toUpperCase()} images and we'll convert them to {formats.target.toUpperCase()} format
-            with the highest quality and smallest file size. Process up to 50 files at once!
+            {t('common.uploadDescription')}
           </p>
         </div>
       )}
       
       {/* File upload area */}
-      {!uploadedFiles.length ? (
+      {!files.length ? (
         <div>
         <Card
           ref={dropAreaRef}
@@ -403,15 +490,15 @@ export function ConversionArea() {
               <Upload size={36} aria-hidden="true" />
             </div>
               <h2 className="text-xl font-semibold">
-                Drag and Drop Your {formats?.source.toUpperCase()} Images Here
+                {t('common.dragAndDrop')}
               </h2>
             <p className="text-muted-foreground mb-4 max-w-md">
-                or click the button below to browse your files (up to 50 images at once)
+                {t('common.uploadLimit')}
             </p>
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={`.${source}`}
                 multiple
               className="hidden"
               onChange={handleFileSelect}
@@ -423,7 +510,7 @@ export function ConversionArea() {
               className="font-medium"
               aria-label="Browse files"
             >
-                Choose Files
+                {t('common.chooseFiles')}
             </Button>
           </div>
         </Card>
@@ -434,10 +521,10 @@ export function ConversionArea() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card p-4 rounded-lg">
             <div>
               <h3 className="font-medium">
-                {uploadedFiles.length} {uploadedFiles.length === 1 ? 'image' : 'images'} selected
+                {files.length} {files.length === 1 ? 'image' : 'images'} selected
               </h3>
               <p className="text-sm text-muted-foreground">
-                Total size: {(uploadedFiles.reduce((sum, file) => sum + file.size, 0) / 1024).toFixed(1)} KB
+                Total size: {(files.reduce((sum, file) => sum + file.originalSize, 0) / 1024).toFixed(1)} KB
               </p>
             </div>
             
@@ -447,17 +534,17 @@ export function ConversionArea() {
                 onClick={handleReset} 
                 aria-label="Upload different images"
               >
-                Upload Different Images
+                {t('common.uploadDifferent')}
               </Button>
               
-              {convertedImages.length > 0 && (
+              {hasCompletedFiles && (
                 <Button 
                   onClick={handleDownloadAll}
                   disabled={isConverting}
                   aria-label="Download all converted images"
                 >
                   <Download size={16} className="mr-2" aria-hidden="true" />
-                  Download All
+                  {t('common.downloadAll')}
                 </Button>
               )}
             </div>
@@ -467,32 +554,37 @@ export function ConversionArea() {
           {isConverting && (
             <div className="space-y-2 bg-card p-4 rounded-lg">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">Converting images...</span>
-                <span className="text-sm">{Math.round(conversionProgress)}%</span>
+                <span className="text-sm font-medium">{t('common.converting')}</span>
+                <span className="text-sm">{progress}%</span>
               </div>
-              <Progress value={conversionProgress} className="h-2" />
+              <Progress value={progress} className="h-2" />
             </div>
           )}
           
           {/* Conversion stats */}
-          {conversionTime !== null && convertedImages.length > 0 && (
+          {conversionStats && (
             <div className="bg-card p-4 rounded-lg text-center">
               <p className="text-sm">
-                Converted {convertedImages.length} {convertedImages.length === 1 ? 'image' : 'images'} in {conversionTime} seconds
-                • Average size reduction: {calculateSizeReduction()}
+                {t('common.conversionStats', {
+                  count: conversionStats.count,
+                  time: conversionStats.time,
+                  reduction: conversionStats.sizeReduction > 0 
+                    ? `${conversionStats.sizeReduction} KB` 
+                    : t('common.noReduction')
+                })}
               </p>
             </div>
           )}
           
           {/* File grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {uploadedFiles.map((file, index) => (
-              <Card key={`${file.name}-${index}`} className="p-4 glass-card relative">
+            {files.map((file, index) => (
+              <Card key={file.id} className="p-4 glass-card relative">
                 <Button
                   variant="destructive"
                   size="icon"
                   className="h-6 w-6 absolute top-2 right-2 z-10"
-                  onClick={() => handleRemoveFile(index)}
+                  onClick={() => handleRemoveFile(file.id)}
                   aria-label="Remove file"
                 >
                   <X size={12} />
@@ -501,54 +593,41 @@ export function ConversionArea() {
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2 truncate pr-8">
                     <FileImage size={16} aria-hidden="true" />
-                    <span className="text-sm font-medium truncate" title={file.name}>
-                      {file.name}
+                    <span className="text-sm font-medium truncate" title={file.originalFile.name}>
+                      {file.originalFile.name}
                     </span>
                   </div>
                 </div>
                 
                 <div className="relative border border-border rounded-md aspect-square flex items-center justify-center overflow-hidden mb-2">
                 <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Original ${formats?.source.toUpperCase()} image`}
+                    src={URL.createObjectURL(file.originalFile)}
+                    alt={`Original ${source.toUpperCase()} image`}
                   className="max-w-full max-h-full object-contain"
                 />
                 </div>
                 
                 <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
-                  <span>Original: {(file.size / 1024).toFixed(1)} KB</span>
-                  {convertedImages[index] && (
-                    <span>Converted: {(convertedImages[index].blob.size / 1024).toFixed(1)} KB</span>
+                  <span>{t('common.original')}: {(file.originalSize / 1024).toFixed(1)} KB</span>
+                  {file.status === 'completed' && (
+                    <span>{t('common.converted')}: {(file.convertedSize / 1024).toFixed(1)} KB</span>
               )}
             </div>
             
-                {convertedImages[index] ? (
+                {file.status === 'completed' && (
               <Button 
                     size="sm"
                 className="w-full"
                     onClick={() => handleDownloadSingle(index)}
-                aria-label={`Download converted ${formats?.target.toUpperCase()} image`}
+                    aria-label={`Download converted ${target.toUpperCase()} image`}
               >
                     <Download size={14} className="mr-2" aria-hidden="true" />
-                Download
+                    {t('common.download')}
               </Button>
-                ) : (
-                  <div className="h-9 flex items-center justify-center">
-                    {isConverting ? (
-                      <span className="text-xs text-muted-foreground flex items-center">
-                        <RefreshCw size={14} className="animate-spin mr-2" aria-hidden="true" />
-                        Converting...
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        Waiting for conversion...
-                      </span>
-                    )}
-            </div>
                 )}
-          </Card>
+              </Card>
             ))}
-          </div>
+            </div>
         </div>
       )}
     </div>
