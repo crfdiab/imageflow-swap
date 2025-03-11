@@ -5,11 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Contact = () => {
+  const { languagePath } = useLanguage();
+  const { t } = useTranslation();
+  
   // Set page metadata
   useEffect(() => {
-    document.title = "Contact Us | Convertify";
+    document.title = t('pages.contact.title');
     
     // Set meta description
     let metaDescription = document.querySelector('meta[name="description"]');
@@ -18,9 +23,7 @@ const Contact = () => {
       metaDescription.setAttribute('name', 'description');
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', 
-      "Get in touch with the Convertify team. We welcome your feedback, questions, and suggestions about our free online image conversion tool."
-    );
+    metaDescription.setAttribute('content', t('pages.contact.description'));
     
     // Set canonical link
     let canonicalLink = document.querySelector('link[rel="canonical"]');
@@ -29,71 +32,107 @@ const Contact = () => {
       canonicalLink.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', "https://convertify.click/contact");
-  }, []);
-
+    canonicalLink.setAttribute('href', `https://convertify.click${languagePath('/contact')}`);
+  }, [languagePath, t]);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, you would handle form submission here
+    alert("This form is not functional in the demo. In a real application, this would send your message to our team.");
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <p className="text-lg mb-4">
-              We'd love to hear from you! Whether you have a question, feedback, or just want to say hello, feel free to reach out to us.
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">
+            {t('common.contactUs')}
+          </h1>
+          
+          <div className="prose dark:prose-invert max-w-none mb-8">
+            <p className="lead">
+              We'd love to hear from you! Whether you have a question about our services, need help with a conversion, or just want to say hello, please don't hesitate to reach out.
             </p>
-            
-            <Card className="p-6 mt-6">
-              <h2 className="text-xl font-bold mb-4">Contact Information</h2>
-              <div className="space-y-2">
-                <p><strong>Email:</strong> <a href="mailto:support@convertify.click" className="text-primary hover:underline">support@convertify.click</a></p>
-                <p><strong>Response Time:</strong> We aim to respond to all inquiries within 24-48 hours.</p>
-              </div>
-            </Card>
-            
-            <Card className="p-6 mt-6">
-              <h2 className="text-xl font-bold mb-4">Frequently Asked Questions</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium">Is Convertify really free?</h3>
-                  <p className="text-muted-foreground">Yes, Convertify is completely free to use with no hidden fees or subscriptions.</p>
-                </div>
-                <div>
-                  <h3 className="font-medium">Are my images uploaded to your servers?</h3>
-                  <p className="text-muted-foreground">No, all image processing happens directly in your browser. Your files never leave your device.</p>
-                </div>
-                <div>
-                  <h3 className="font-medium">How many images can I convert at once?</h3>
-                  <p className="text-muted-foreground">You can convert up to 50 images simultaneously with our batch processing feature.</p>
-                </div>
-              </div>
-            </Card>
           </div>
           
-          <div>
-            <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">Send Us a Message</h2>
-              <form className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Send Us a Message</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
-                  <Input id="name" placeholder="Your name" />
+                  <label htmlFor="name" className="block text-sm font-medium mb-1">
+                    Name
+                  </label>
+                  <Input id="name" placeholder="Your name" required />
                 </div>
+                
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-                  <Input id="email" type="email" placeholder="Your email address" />
+                  <label htmlFor="email" className="block text-sm font-medium mb-1">
+                    Email
+                  </label>
+                  <Input id="email" type="email" placeholder="your.email@example.com" required />
                 </div>
+                
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium mb-1">Subject</label>
-                  <Input id="subject" placeholder="Subject of your message" />
+                  <label htmlFor="subject" className="block text-sm font-medium mb-1">
+                    Subject
+                  </label>
+                  <Input id="subject" placeholder="What is your message about?" required />
                 </div>
+                
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-1">Message</label>
-                  <Textarea id="message" placeholder="Your message" rows={6} />
+                  <label htmlFor="message" className="block text-sm font-medium mb-1">
+                    Message
+                  </label>
+                  <Textarea 
+                    id="message" 
+                    placeholder="Please provide as much detail as possible..." 
+                    rows={5}
+                    required
+                  />
                 </div>
-                <Button type="submit" className="w-full">Send Message</Button>
+                
+                <Button type="submit" className="w-full">
+                  Send Message
+                </Button>
               </form>
-            </Card>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Other Ways to Connect</h2>
+              
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Email</h3>
+                  <p className="text-muted-foreground">
+                    For general inquiries: <a href="mailto:info@convertify.click" className="text-primary hover:underline">info@convertify.click</a>
+                  </p>
+                  <p className="text-muted-foreground">
+                    For technical support: <a href="mailto:support@convertify.click" className="text-primary hover:underline">support@convertify.click</a>
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Social Media</h3>
+                  <p className="text-muted-foreground mb-2">
+                    Follow us on social media for updates, tips, and more:
+                  </p>
+                  <div className="flex space-x-4">
+                    <a href="#" className="text-primary hover:underline">Twitter</a>
+                    <a href="#" className="text-primary hover:underline">Facebook</a>
+                    <a href="#" className="text-primary hover:underline">LinkedIn</a>
+                  </div>
+          </div>
+          
+                <div>
+                  <h3 className="text-lg font-medium mb-2">FAQ</h3>
+                  <p className="text-muted-foreground">
+                    Before reaching out, you might find your answer in our <a href={languagePath('/#faq')} className="text-primary hover:underline">Frequently Asked Questions</a>.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

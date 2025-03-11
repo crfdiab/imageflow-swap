@@ -2,8 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
@@ -17,6 +17,14 @@ import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { SchemaMarkup } from "./components/SchemaMarkup";
 import { OpenGraphTags } from "./components/OpenGraphTags";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import { HrefLangTags } from "@/components/HrefLangTags";
+import { 
+  SUPPORTED_LANGUAGES, 
+  DEFAULT_LANGUAGE, 
+  LanguageCode,
+  getLanguageFromPath
+} from "@/utils/languageUtils";
 
 // Your GTM ID
 const GTM_ID = 'GTM-PFH5MKLB';
@@ -47,7 +55,7 @@ const addVerificationTag = () => {
 // Remove unwanted scripts
 const removeUnwantedScripts = () => {
   // Remove the GPT Engineer script from both head and body
-  const removeScriptFromElement = (element) => {
+  const removeScriptFromElement = (element: HTMLElement) => {
     const scripts = element.querySelectorAll('script');
     scripts.forEach(script => {
       if (script.src && script.src.includes('cdn.gpteng.co/gptengineer.js')) {
@@ -62,7 +70,7 @@ const removeUnwantedScripts = () => {
   removeScriptFromElement(document.body);
   
   // Override appendChild for both head and body
-  const overrideAppendChild = (element) => {
+  const overrideAppendChild = (element: HTMLElement) => {
     const originalAppendChild = element.appendChild;
     element.appendChild = function(node) {
       if (node.nodeName === 'SCRIPT' && 
@@ -93,7 +101,7 @@ const App = () => {
     removeUnwantedScripts();
     
     // Set up a MutationObserver to detect and remove the script if it gets added later
-    const observeElement = (element) => {
+    const observeElement = (element: HTMLElement) => {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
@@ -128,31 +136,57 @@ const App = () => {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="convertify-theme">
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+          <Router>
             <GoogleTagManager gtmId={GTM_ID} />
             <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
             <SchemaMarkup />
             <OpenGraphTags />
-            <Routes>
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/data-protection" element={<DataProtection />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/" element={<Index />} />
-              <Route path="/:slug" element={<Index />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <LanguageProvider>
+              <HrefLangTags />
+        <Routes>
+                {/* Redirect root to default language */}
+          <Route path="/" element={<Index />} />
+                
+                {/* Language-specific routes */}
+                {SUPPORTED_LANGUAGES.map(lang => (
+                  <Route key={lang.code} path={`/${lang.code}`} element={<Index />} />
+                ))}
+                
+                {/* Format conversion routes with language prefix */}
+          <Route path="/:slug" element={<Index />} />
+                {SUPPORTED_LANGUAGES.map(lang => (
+                  <Route key={`${lang.code}-slug`} path={`/${lang.code}/:slug`} element={<Index />} />
+                ))}
+                
+                {/* Static pages with language prefix */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+                
+                {SUPPORTED_LANGUAGES.map(lang => (
+                  <React.Fragment key={`${lang.code}-static`}>
+                    <Route path={`/${lang.code}/about`} element={<About />} />
+                    <Route path={`/${lang.code}/contact`} element={<Contact />} />
+                    <Route path={`/${lang.code}/privacy`} element={<Privacy />} />
+                    <Route path={`/${lang.code}/terms`} element={<Terms />} />
+                  </React.Fragment>
+                ))}
+                
+                {/* 404 page */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+            </LanguageProvider>
             <BackToTop />
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
+          </Router>
+    </TooltipProvider>
+  </QueryClientProvider>
     </ThemeProvider>
-  );
+);
 };
 
 export default App;

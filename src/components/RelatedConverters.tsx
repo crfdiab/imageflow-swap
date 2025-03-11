@@ -4,10 +4,14 @@ import { ArrowRight } from "lucide-react";
 import { slugToFormat, formatToSlug, ImageFormat } from "@/utils/formatUtils";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useLanguage } from "./LanguageProvider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function RelatedConverters() {
   const { slug } = useParams<{ slug: string }>();
   const formats = slug ? slugToFormat(slug) : null;
+  const { languagePath } = useLanguage();
+  const { t } = useTranslation();
   
   if (!formats) return null;
   
@@ -53,14 +57,14 @@ export function RelatedConverters() {
     <section className="py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Related Converters
+          {t('common.relatedConverters')}
         </h2>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {relatedConverters.map(({ source, target, slug }) => (
             <Link
               key={slug}
-              to={`/${slug}`}
+              to={languagePath(`/${slug}`)}
               className="no-underline text-foreground"
               onClick={handleLinkClick}
             >
@@ -74,7 +78,7 @@ export function RelatedConverters() {
                   <span>{target.toUpperCase()}</span>
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Convert {source.toUpperCase()} to {target.toUpperCase()} format
+                  {t('common.convert')} {source.toUpperCase()} {t('common.to')} {target.toUpperCase()} {t('common.format')}
                 </p>
               </Card>
             </Link>
