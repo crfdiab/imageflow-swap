@@ -1,5 +1,4 @@
-
 User-agent: *
 Allow: /
 
-Sitemap: https://convertify.click/sitemap.xml
+Sitemap: https://convertify.click/sitemaps/sitemap.xml
