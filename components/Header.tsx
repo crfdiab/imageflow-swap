@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ThemeToggle } from './ThemeToggle';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import { IMAGE_FORMATS, formatToSlug, ImageFormat } from '@/utils/formatUtils';
 import { useParams } from 'next/navigation';
